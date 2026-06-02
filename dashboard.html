@@ -3,21 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CHIA — Dashboard Ventas</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<title>CHiA — Dashboard Ventas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #0f0f0d;
-    --surface: #181815;
-    --surface2: #1f1f1b;
-    --border: #2a2a26;
-    --accent: #c8f060;
-    --accent2: #f0c860;
-    --accent3: #60d4f0;
-    --text: #f0ede6;
-    --muted: #7a7a70;
-    --danger: #f06060;
+    --bg:      #F0EAE0;
+    --surface: #FFFFFF;
+    --surface2:#E8E0D4;
+    --border:  #D5CCC0;
+    --purple:  #4A2D6F;
+    --purple2: #7B5EA7;
+    --lavender:#C4A8D4;
+    --lavender2:#E6D8F0;
+    --text:    #2A1D3E;
+    --muted:   #9B8AAA;
+    --danger:  #C0392B;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,424 +26,514 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'DM Mono', monospace;
+    font-family: 'Inter', sans-serif;
     min-height: 100vh;
-    overflow-x: hidden;
   }
 
   /* ── Header ── */
   header {
+    background: var(--purple);
+    padding: 0 40px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 28px 40px;
-    border-bottom: 1px solid var(--border);
+    gap: 24px;
+    height: 60px;
     position: sticky;
     top: 0;
-    background: var(--bg);
     z-index: 100;
   }
 
   .logo {
     font-family: 'Syne', sans-serif;
     font-weight: 800;
-    font-size: 1.6rem;
-    letter-spacing: 0.15em;
-    color: var(--accent);
+    font-size: 1.4rem;
+    color: #fff;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
   }
 
-  .logo span { color: var(--text); opacity: 0.4; font-weight: 400; font-size: 0.8rem; letter-spacing: 0.1em; margin-left: 12px; }
+  .logo em {
+    font-style: normal;
+    font-size: 0.75rem;
+    opacity: 0.55;
+    font-weight: 400;
+    margin-left: 8px;
+    letter-spacing: 0.08em;
+  }
+
+  .header-sep {
+    width: 1px;
+    height: 24px;
+    background: rgba(255,255,255,0.2);
+  }
+
+  .header-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.65);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
 
   #status {
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    color: var(--muted);
+    margin-left: auto;
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.45);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  #status::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    transition: background 0.3s;
+  }
+
+  #status.ok::before  { background: #8ef08e; }
+  #status.error::before { background: #f08e8e; }
+
+  /* ── Filters ── */
+  .filters {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    gap: 20px;
+    padding: 12px 40px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-group {
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
-  #status::before {
-    content: '';
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--muted);
-    transition: background 0.3s;
-  }
-
-  #status.ok::before { background: var(--accent); }
-  #status.error::before { background: var(--danger); }
-
-  /* ── Filtros ── */
-  .filters {
-    display: flex;
-    gap: 12px;
-    padding: 20px 40px;
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .filters label {
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
+  .filter-group label {
+    font-size: 0.68rem;
+    font-weight: 600;
     color: var(--muted);
     text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
   }
 
-  select, .filter-btn {
-    background: var(--surface);
+  select {
+    background: var(--bg);
     border: 1px solid var(--border);
     color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    padding: 7px 14px;
-    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    border-radius: 6px;
     cursor: pointer;
     outline: none;
     transition: border-color 0.2s;
+    min-width: 130px;
   }
 
-  select:focus, select:hover { border-color: var(--accent); }
+  select:focus, select:hover { border-color: var(--purple2); }
 
-  .filter-btn {
-    background: var(--accent);
-    color: var(--bg);
-    border-color: var(--accent);
-    font-weight: 500;
-    letter-spacing: 0.05em;
+  .btn {
+    padding: 7px 18px;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s;
+    letter-spacing: 0.04em;
   }
 
-  .filter-btn:hover { opacity: 0.85; }
+  .btn:hover { opacity: 0.82; }
+  .btn-primary   { background: var(--purple);  color: #fff; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 
   /* ── Main ── */
   main {
     padding: 32px 40px;
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
   }
 
-  /* ── KPI Row ── */
+  /* ── KPI row ── */
   .kpi-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
   }
 
   .kpi {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 22px 24px;
+    background: var(--purple);
+    border-radius: 12px;
+    padding: 24px 28px;
+    color: #fff;
     position: relative;
     overflow: hidden;
-    transition: border-color 0.2s, transform 0.2s;
   }
-
-  .kpi:hover { border-color: var(--accent); transform: translateY(-2px); }
 
   .kpi::after {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--accent);
-    opacity: 0;
-    transition: opacity 0.2s;
+    bottom: -24px; right: -24px;
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
   }
 
-  .kpi:hover::after { opacity: 1; }
+  .kpi.light {
+    background: var(--lavender2);
+    color: var(--text);
+  }
 
   .kpi-label {
-    font-size: 0.62rem;
-    letter-spacing: 0.14em;
+    font-size: 0.68rem;
+    font-weight: 600;
     text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 10px;
+    letter-spacing: 0.12em;
+    opacity: 0.7;
+    margin-bottom: 14px;
   }
+
+  .kpi.light .kpi-label { color: var(--purple2); opacity: 1; }
 
   .kpi-value {
     font-family: 'Syne', sans-serif;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--accent);
+    font-size: 2.5rem;
+    font-weight: 800;
     line-height: 1;
   }
 
-  .kpi-sub {
-    font-size: 0.65rem;
-    color: var(--muted);
-    margin-top: 6px;
+  .kpi.light .kpi-value { color: var(--purple); }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid var(--border);
   }
 
-  .kpi.alt .kpi-value { color: var(--accent2); }
-  .kpi.alt::after { background: var(--accent2); }
-  .kpi.blue .kpi-value { color: var(--accent3); }
-  .kpi.blue::after { background: var(--accent3); }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--purple);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
 
-  /* ── Charts Grid ── */
-  .charts-grid {
+  /* ── Grids ── */
+  .grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
   }
 
-  .charts-grid.three { grid-template-columns: 1fr 1fr 1fr; }
-
-  @media (max-width: 900px) {
-    .charts-grid, .charts-grid.three { grid-template-columns: 1fr; }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
   }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 24px;
-    transition: border-color 0.2s;
-  }
-
-  .card:hover { border-color: var(--border); }
-
-  .card-title {
-    font-size: 0.65rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 20px;
-  }
-
-  .card.full { grid-column: 1 / -1; }
 
   canvas { max-height: 280px; }
 
-  /* ── Tabla ── */
-  .table-wrap { overflow-x: auto; }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.72rem;
+  /* ── Zona breakdown ── */
+  .zona-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
   }
 
-  th {
-    text-align: left;
-    padding: 8px 14px;
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
+  .zona-total {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.12em;
     color: var(--muted);
-    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
   }
 
-  td {
-    padding: 9px 14px;
-    border-bottom: 1px solid #1a1a17;
-    transition: background 0.15s;
+  .zona-total-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 20px;
   }
 
-  tr:hover td { background: var(--surface2); }
+  .zona-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 0;
+  }
 
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 3px;
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
-    background: var(--surface2);
-    border: 1px solid var(--border);
+  .zona-item {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+
+  .zona-item-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: var(--purple2);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .zona-item-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  /* ── Ranking table ── */
+  .rank-item {
+    display: grid;
+    grid-template-columns: 22px 1fr 72px;
+    gap: 10px;
+    align-items: start;
+    margin-bottom: 12px;
+  }
+
+  .rank-num {
+    font-size: 0.62rem;
+    color: var(--muted);
+    padding-top: 2px;
+  }
+
+  .rank-name {
+    font-size: 0.78rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+
+  .rank-bar-bg {
+    height: 4px;
+    background: var(--lavender2);
+    border-radius: 2px;
+  }
+
+  .rank-bar-fill {
+    height: 4px;
+    background: var(--purple);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .rank-val {
+    text-align: right;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--purple2);
+    padding-top: 2px;
   }
 
   /* ── Loading ── */
   #loading {
     position: fixed;
     inset: 0;
-    background: var(--bg);
+    background: var(--purple);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     z-index: 999;
-    gap: 16px;
-    transition: opacity 0.4s;
+    gap: 20px;
+    transition: opacity 0.5s;
   }
 
   #loading.hidden { opacity: 0; pointer-events: none; }
 
+  .load-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.08em;
+  }
+
+  .load-sub {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
   .spinner {
-    width: 36px; height: 36px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
+    width: 38px; height: 38px;
+    border: 3px solid rgba(255,255,255,0.15);
+    border-top-color: rgba(255,255,255,0.8);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  #loading p { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; }
-
   /* ── Error ── */
   #error-msg {
     display: none;
-    background: #1a0f0f;
-    border: 1px solid var(--danger);
-    border-radius: 8px;
-    padding: 20px 24px;
+    background: #fff5f5;
+    border: 1px solid #f5c0c0;
+    border-radius: 10px;
+    padding: 20px 28px;
     color: var(--danger);
-    font-size: 0.75rem;
-    line-height: 1.6;
+    font-size: 0.8rem;
+    line-height: 1.7;
     margin: 0 40px;
   }
 
-  .num { color: var(--accent); }
-  .rank-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .rank-bar-inner {
-    height: 6px;
-    background: var(--accent);
-    border-radius: 3px;
-    transition: width 0.4s;
-    min-width: 2px;
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .kpi-row, .grid-2, .grid-3, .zona-section { grid-template-columns: 1fr; }
+    header, .filters, main { padding-left: 20px; padding-right: 20px; }
+    .zona-grid { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
 <body>
 
 <div id="loading">
+  <div class="load-logo">CHiA</div>
   <div class="spinner"></div>
-  <p>CARGANDO DATOS...</p>
+  <div class="load-sub">Cargando datos...</div>
 </div>
 
 <div id="error-msg"></div>
 
 <header>
-  <div class="logo">CHIA <span>DASHBOARD VENTAS</span></div>
-  <div id="status">CONECTANDO</div>
+  <div class="logo">CHiA <em>good food</em></div>
+  <div class="header-sep"></div>
+  <div class="header-title">Dashboard Ventas</div>
+  <div id="status">Conectando</div>
 </header>
 
 <div class="filters">
-  <label>MES/AÑO</label>
-  <select id="f-mes"><option value="">Todos</option></select>
-  <label>SUCURSAL</label>
-  <select id="f-sucursal"><option value="">Todas</option></select>
-  <label>TURNO</label>
-  <select id="f-turno"><option value="">Todos</option></select>
-  <label>FAMILIA</label>
-  <select id="f-familia"><option value="">Todas</option></select>
-  <button class="filter-btn" onclick="applyFilters()">APLICAR</button>
-  <button class="filter-btn" style="background:var(--surface);color:var(--text);border-color:var(--border)" onclick="resetFilters()">RESET</button>
+  <div class="filter-group">
+    <label>Mes/Año</label>
+    <select id="f-mes"><option value="">Todos</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Sucursal</label>
+    <select id="f-sucursal"><option value="">Todas</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Turno</label>
+    <select id="f-turno"><option value="">Todos</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Familia</label>
+    <select id="f-familia"><option value="">Todas</option></select>
+  </div>
+  <button class="btn btn-primary" onclick="applyFilters()">Aplicar</button>
+  <button class="btn btn-secondary" onclick="resetFilters()">Limpiar</button>
 </div>
 
 <main>
+
   <!-- KPIs -->
   <div class="kpi-row">
     <div class="kpi">
-      <div class="kpi-label">Platos vendidos</div>
-      <div class="kpi-value" id="kpi-platos">—</div>
-      <div class="kpi-sub" id="kpi-platos-sub"></div>
+      <div class="kpi-label">Total Menus</div>
+      <div class="kpi-value" id="kpi-menus">—</div>
     </div>
-    <div class="kpi alt">
-      <div class="kpi-label">Comandas totales</div>
-      <div class="kpi-value" id="kpi-comandas">—</div>
-      <div class="kpi-sub" id="kpi-comandas-sub"></div>
-    </div>
-    <div class="kpi blue">
-      <div class="kpi-label">Productos distintos</div>
-      <div class="kpi-value" id="kpi-productos">—</div>
-      <div class="kpi-sub">en el período</div>
+    <div class="kpi light">
+      <div class="kpi-label">Menus por Comanda</div>
+      <div class="kpi-value" id="kpi-ratio">—</div>
     </div>
     <div class="kpi">
-      <div class="kpi-label">Días con ventas</div>
-      <div class="kpi-value" id="kpi-dias">—</div>
-      <div class="kpi-sub" id="kpi-dias-sub"></div>
-    </div>
-    <div class="kpi alt">
-      <div class="kpi-label">Promedio diario</div>
-      <div class="kpi-value" id="kpi-promedio">—</div>
-      <div class="kpi-sub">platos / día</div>
+      <div class="kpi-label">Total Comandas</div>
+      <div class="kpi-value" id="kpi-comandas">—</div>
     </div>
   </div>
 
-  <!-- Charts row 1 -->
-  <div class="charts-grid">
+  <!-- Ranking Familias (full width) -->
+  <div class="card">
+    <div class="card-title">Ranking Familias</div>
+    <canvas id="chart-familia" style="max-height:340px"></canvas>
+  </div>
+
+  <!-- Menus por Sucursal + Documentos por Sucursal -->
+  <div class="grid-2">
     <div class="card">
-      <div class="card-title">Ventas por mes</div>
+      <div class="card-title">Menus por Sucursal</div>
+      <canvas id="chart-menus-suc"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Documentos por Sucursal</div>
+      <canvas id="chart-docs-suc"></canvas>
+    </div>
+  </div>
+
+  <!-- Documentos x Zona -->
+  <div class="card">
+    <div class="card-title">Documentos × Zona</div>
+    <div class="zona-section">
+      <!-- Left: numbers -->
+      <div>
+        <div class="zona-total">Total comandas</div>
+        <div class="zona-total-val" id="zona-total">—</div>
+        <div class="zona-grid" id="zona-grid"></div>
+      </div>
+      <!-- Right: pie chart -->
+      <div>
+        <canvas id="chart-zona" style="max-height:300px"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Evolución mensual + Ranking productos -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Evolución de Menus por Mes</div>
       <canvas id="chart-mes"></canvas>
     </div>
     <div class="card">
-      <div class="card-title">Distribución por sucursal</div>
-      <canvas id="chart-sucursal"></canvas>
+      <div class="card-title">Ranking de Productos</div>
+      <div id="ranking-table"></div>
     </div>
   </div>
 
-  <!-- Charts row 2 -->
-  <div class="charts-grid three">
-    <div class="card">
-      <div class="card-title">Turno mañana vs tarde</div>
-      <canvas id="chart-turno"></canvas>
-    </div>
-    <div class="card">
-      <div class="card-title">Ventas por familia</div>
-      <canvas id="chart-familia"></canvas>
-    </div>
-    <div class="card">
-      <div class="card-title">Comandas por zona (Datos 2)</div>
-      <canvas id="chart-zona"></canvas>
-    </div>
-  </div>
-
-  <!-- Charts row 3 -->
-  <div class="charts-grid">
-    <div class="card full">
-      <div class="card-title">Evolución diaria de platos vendidos</div>
-      <canvas id="chart-daily" style="max-height:200px"></canvas>
-    </div>
-  </div>
-
-  <!-- Ranking productos -->
-  <div class="card">
-    <div class="card-title">Ranking de productos más vendidos</div>
-    <div id="ranking-table"></div>
-  </div>
-
-  <!-- Tabla comandas por sucursal/zona -->
-  <div class="card">
-    <div class="card-title">Comandas por sucursal y zona</div>
-    <div class="table-wrap">
-      <table id="tabla-comandas">
-        <thead><tr><th>Sucursal</th><th>Zona</th><th>Comandas</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
 </main>
 
 <script>
-// ── Utilidades ──────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
-const fmt = n => Number(n).toLocaleString('es-AR');
+const fmt  = n => Number(n).toLocaleString('es-AR');
+const fmt2 = n => Number(n).toFixed(2).replace('.', ',');
 
-const CHART_COLORS = [
-  '#c8f060','#f0c860','#60d4f0','#f06090','#90f0a0',
-  '#f0a060','#a060f0','#60f0d0','#f06060','#60a0f0'
+const PURPLE_PALETTE = [
+  '#4A2D6F','#7B5EA7','#C4A8D4','#9B7EC8',
+  '#6B4F8A','#B89AC8','#2D1A45','#D4C0E0',
+  '#8A6AB0','#E0D0EE'
 ];
 
-Chart.defaults.color = '#7a7a70';
-Chart.defaults.borderColor = '#2a2a26';
-Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.color = '#9B8AAA';
+Chart.defaults.borderColor = '#E8E0D4';
+Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.font.size = 11;
 
 const charts = {};
-
 function makeChart(id, config) {
   if (charts[id]) charts[id].destroy();
   charts[id] = new Chart($(id), config);
 }
 
-// ── Parse data from Google Sheets rows ──────────────────────────────────────
+// ── Parse ────────────────────────────────────────────────────────────────────
 function parseRows(rows) {
   if (!rows || rows.length < 2) return [];
   const headers = rows[0].map(h => h.trim().toLowerCase());
@@ -453,44 +544,38 @@ function parseRows(rows) {
   });
 }
 
-// Mapeos de columnas
 function normalizeDatos(rows) {
-  // Columnas: mes/año, fecha, producto, sucursal, turno, cantidad, familia
   return parseRows(rows).map(r => ({
-    mes: r['mes/año'] || r['mes'] || '',
-    fecha: r['fecha'] || '',
-    producto: r['producto'] || r['ensalada aguacate'] || '',
+    mes:      r['mes/año'] || r['mes'] || '',
+    fecha:    r['fecha']   || '',
+    producto: r['producto'] || '',
     sucursal: r['sucursal'] || '',
-    turno: r['turno'] || '',
+    turno:    r['turno']   || '',
     cantidad: parseInt(r['cantidad']) || 0,
-    familia: r['familia'] || '',
+    familia:  r['familia'] || '',
   })).filter(r => r.fecha && r.cantidad > 0);
 }
 
 function normalizeDatos2(rows) {
-  // Columnas: mes/año, fecha, sucursal, zona, documentos
   return parseRows(rows).map(r => ({
-    mes: r['mes/año'] || r['mes'] || '',
-    fecha: r['fecha'] || '',
-    sucursal: r['sucursal'] || '',
-    zona: r['zona'] || '',
+    mes:        r['mes/año'] || r['mes'] || '',
+    fecha:      r['fecha']   || '',
+    sucursal:   r['sucursal'] || '',
+    zona:       r['zona']    || '',
     documentos: parseInt(r['documentos']) || 0,
   })).filter(r => r.fecha && r.documentos > 0);
 }
 
-// ── Estado global ────────────────────────────────────────────────────────────
-let rawDatos = [];
-let rawDatos2 = [];
-let filteredDatos = [];
-let filteredDatos2 = [];
+// ── Estado ───────────────────────────────────────────────────────────────────
+let rawDatos = [], rawDatos2 = [];
+let filteredDatos = [], filteredDatos2 = [];
 
 // ── Filtros ──────────────────────────────────────────────────────────────────
 function populateFilters() {
-  const meses = [...new Set(rawDatos.map(r => r.mes))].filter(Boolean).sort();
-  const sucursales = [...new Set(rawDatos.map(r => r.sucursal))].filter(Boolean).sort();
-  const turnos = [...new Set(rawDatos.map(r => r.turno))].filter(Boolean).sort();
-  const familias = [...new Set(rawDatos.map(r => r.familia))].filter(Boolean).sort();
-
+  const meses     = [...new Set(rawDatos.map(r => r.mes))].filter(Boolean).sort();
+  const sucursales= [...new Set(rawDatos.map(r => r.sucursal))].filter(Boolean).sort();
+  const turnos    = [...new Set(rawDatos.map(r => r.turno))].filter(Boolean).sort();
+  const familias  = [...new Set(rawDatos.map(r => r.familia))].filter(Boolean).sort();
   populate('f-mes', meses);
   populate('f-sucursal', sucursales);
   populate('f-turno', turnos);
@@ -510,255 +595,213 @@ function populate(id, values) {
 }
 
 function applyFilters() {
-  const mes = $('f-mes').value;
-  const suc = $('f-sucursal').value;
-  const turno = $('f-turno').value;
-  const familia = $('f-familia').value;
-
-  filteredDatos = rawDatos.filter(r =>
-    (!mes || r.mes === mes) &&
-    (!suc || r.sucursal === suc) &&
-    (!turno || r.turno === turno) &&
-    (!familia || r.familia === familia)
+  const mes    = $('f-mes').value;
+  const suc    = $('f-sucursal').value;
+  const turno  = $('f-turno').value;
+  const familia= $('f-familia').value;
+  filteredDatos  = rawDatos.filter(r =>
+    (!mes    || r.mes      === mes)    &&
+    (!suc    || r.sucursal === suc)    &&
+    (!turno  || r.turno    === turno)  &&
+    (!familia|| r.familia  === familia)
   );
-
   filteredDatos2 = rawDatos2.filter(r =>
-    (!mes || r.mes === mes) &&
-    (!suc || r.sucursal === suc)
+    (!mes || r.mes === mes) && (!suc || r.sucursal === suc)
   );
-
   render();
 }
 
 function resetFilters() {
-  $('f-mes').value = '';
-  $('f-sucursal').value = '';
-  $('f-turno').value = '';
-  $('f-familia').value = '';
-  filteredDatos = [...rawDatos];
+  ['f-mes','f-sucursal','f-turno','f-familia'].forEach(id => $(id).value = '');
+  filteredDatos  = [...rawDatos];
   filteredDatos2 = [...rawDatos2];
   render();
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function groupBy(arr, key, valKey) {
+  const map = {};
+  arr.forEach(r => {
+    const k = r[key] || 'Sin dato';
+    map[k] = (map[k] || 0) + (valKey ? r[valKey] : 1);
+  });
+  return map;
 }
 
 // ── Render ───────────────────────────────────────────────────────────────────
 function render() {
   renderKPIs();
-  renderChartMes();
-  renderChartSucursal();
-  renderChartTurno();
-  renderChartFamilia();
-  renderChartZona();
-  renderChartDaily();
-  renderRanking();
-  renderTablaComandas();
+  renderRankingFamilias();
+  renderMenusSucursal();
+  renderDocsSucursal();
+  renderZona();
+  renderMes();
+  renderRankingProductos();
 }
 
 function renderKPIs() {
-  const totalPlatos = filteredDatos.reduce((s, r) => s + r.cantidad, 0);
+  const totalMenus    = filteredDatos.reduce((s, r) => s + r.cantidad, 0);
   const totalComandas = filteredDatos2.reduce((s, r) => s + r.documentos, 0);
-  const productos = new Set(filteredDatos.map(r => r.producto)).size;
-  const dias = new Set(filteredDatos.map(r => r.fecha)).size;
-  const prom = dias ? Math.round(totalPlatos / dias) : 0;
-
-  $('kpi-platos').textContent = fmt(totalPlatos);
+  const ratio = totalComandas > 0 ? (totalMenus / totalComandas) : 0;
+  $('kpi-menus').textContent    = fmt(totalMenus);
   $('kpi-comandas').textContent = fmt(totalComandas);
-  $('kpi-productos').textContent = fmt(productos);
-  $('kpi-dias').textContent = fmt(dias);
-  $('kpi-promedio').textContent = fmt(prom);
+  $('kpi-ratio').textContent    = fmt2(ratio);
 }
 
-function groupBy(arr, key, valueKey) {
-  const map = {};
-  arr.forEach(r => {
-    const k = r[key] || 'Sin dato';
-    map[k] = (map[k] || 0) + (valueKey ? r[valueKey] : 1);
-  });
-  return map;
-}
-
-function renderChartMes() {
-  const grouped = groupBy(filteredDatos, 'mes', 'cantidad');
-  const labels = Object.keys(grouped).sort();
-  makeChart('chart-mes', {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        data: labels.map(l => grouped[l]),
-        backgroundColor: '#c8f06033',
-        borderColor: '#c8f060',
-        borderWidth: 1,
-        borderRadius: 3,
-      }]
-    },
-    options: {
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: '#1f1f1b' } },
-        y: { grid: { color: '#1f1f1b' }, beginAtZero: true }
-      }
-    }
-  });
-}
-
-function renderChartSucursal() {
-  const grouped = groupBy(filteredDatos, 'sucursal', 'cantidad');
-  const labels = Object.keys(grouped);
-  makeChart('chart-sucursal', {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{
-        data: labels.map(l => grouped[l]),
-        backgroundColor: CHART_COLORS.slice(0, labels.length),
-        borderWidth: 0,
-      }]
-    },
-    options: {
-      cutout: '65%',
-      plugins: {
-        legend: { position: 'right', labels: { padding: 14, boxWidth: 10 } }
-      }
-    }
-  });
-}
-
-function renderChartTurno() {
-  const grouped = groupBy(filteredDatos, 'turno', 'cantidad');
-  const labels = Object.keys(grouped);
-  makeChart('chart-turno', {
-    type: 'pie',
-    data: {
-      labels,
-      datasets: [{
-        data: labels.map(l => grouped[l]),
-        backgroundColor: [CHART_COLORS[0], CHART_COLORS[1], CHART_COLORS[2]],
-        borderWidth: 0,
-      }]
-    },
-    options: {
-      plugins: {
-        legend: { position: 'bottom', labels: { padding: 12, boxWidth: 10 } }
-      }
-    }
-  });
-}
-
-function renderChartFamilia() {
+function renderRankingFamilias() {
   const grouped = groupBy(filteredDatos, 'familia', 'cantidad');
-  const labels = Object.keys(grouped).sort((a, b) => grouped[b] - grouped[a]);
+  const labels  = Object.keys(grouped).sort((a, b) => grouped[b] - grouped[a]);
   makeChart('chart-familia', {
     type: 'bar',
     data: {
       labels,
       datasets: [{
+        label: 'Cantidad',
         data: labels.map(l => grouped[l]),
-        backgroundColor: CHART_COLORS.slice(0, labels.length).map(c => c + '44'),
-        borderColor: CHART_COLORS.slice(0, labels.length),
-        borderWidth: 1,
-        borderRadius: 3,
+        backgroundColor: '#4A2D6F',
+        borderRadius: 4,
+        borderSkipped: false,
       }]
     },
     options: {
       indexAxis: 'y',
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { color: '#1f1f1b' }, beginAtZero: true },
+        x: { grid: { color: '#E8E0D4' }, beginAtZero: true },
         y: { grid: { display: false } }
       }
     }
   });
 }
 
-function renderChartZona() {
-  const grouped = groupBy(filteredDatos2, 'zona', 'documentos');
-  const labels = Object.keys(grouped).sort((a, b) => grouped[b] - grouped[a]);
-  makeChart('chart-zona', {
-    type: 'doughnut',
+function renderMenusSucursal() {
+  const grouped = groupBy(filteredDatos, 'sucursal', 'cantidad');
+  const labels  = Object.keys(grouped).sort((a, b) => grouped[b] - grouped[a]);
+  makeChart('chart-menus-suc', {
+    type: 'bar',
     data: {
       labels,
       datasets: [{
+        label: 'Menus',
         data: labels.map(l => grouped[l]),
-        backgroundColor: CHART_COLORS.slice(0, labels.length),
-        borderWidth: 0,
-      }]
-    },
-    options: {
-      cutout: '60%',
-      plugins: {
-        legend: { position: 'bottom', labels: { padding: 10, boxWidth: 10 } }
-      }
-    }
-  });
-}
-
-function renderChartDaily() {
-  const grouped = groupBy(filteredDatos, 'fecha', 'cantidad');
-  const labels = Object.keys(grouped).sort((a, b) => new Date(a) - new Date(b));
-  makeChart('chart-daily', {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        data: labels.map(l => grouped[l]),
-        borderColor: '#c8f060',
-        backgroundColor: '#c8f06015',
-        borderWidth: 1.5,
-        fill: true,
-        tension: 0.3,
-        pointRadius: labels.length > 60 ? 0 : 2,
-        pointHoverRadius: 4,
+        backgroundColor: '#7B5EA7',
+        borderRadius: 6,
+        borderSkipped: false,
       }]
     },
     options: {
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } },
-        y: { grid: { color: '#1f1f1b' }, beginAtZero: true }
+        x: { grid: { display: false } },
+        y: { grid: { color: '#E8E0D4' }, beginAtZero: true }
       }
     }
   });
 }
 
-function renderRanking() {
-  const grouped = groupBy(filteredDatos, 'producto', 'cantidad');
-  const sorted = Object.entries(grouped).sort((a, b) => b[1] - a[1]).slice(0, 15);
-  const max = sorted[0]?.[1] || 1;
-
-  const html = `
-    <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
-      ${sorted.map(([prod, qty], i) => `
-        <div style="display:grid;grid-template-columns:24px 1fr 80px;gap:12px;align-items:center">
-          <span style="color:var(--muted);font-size:0.65rem">${String(i+1).padStart(2,'0')}</span>
-          <div>
-            <div style="font-size:0.75rem;margin-bottom:4px">${prod}</div>
-            <div class="rank-bar">
-              <div class="rank-bar-inner" style="width:${Math.round(qty/max*100)}%"></div>
-            </div>
-          </div>
-          <span class="num" style="text-align:right;font-size:0.85rem">${fmt(qty)}</span>
-        </div>
-      `).join('')}
-    </div>`;
-  $('ranking-table').innerHTML = html;
+function renderDocsSucursal() {
+  const grouped = groupBy(filteredDatos2, 'sucursal', 'documentos');
+  const labels  = Object.keys(grouped).sort((a, b) => grouped[b] - grouped[a]);
+  makeChart('chart-docs-suc', {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Documentos',
+        data: labels.map(l => grouped[l]),
+        backgroundColor: '#9B7EC8',
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false } },
+        y: { grid: { color: '#E8E0D4' }, beginAtZero: true }
+      }
+    }
+  });
 }
 
-function renderTablaComandas() {
-  const map = {};
-  filteredDatos2.forEach(r => {
-    const k = `${r.sucursal}||${r.zona}`;
-    map[k] = (map[k] || 0) + r.documentos;
+function renderZona() {
+  const grouped = groupBy(filteredDatos2, 'zona', 'documentos');
+  const total   = Object.values(grouped).reduce((s, v) => s + v, 0);
+  const labels  = Object.keys(grouped).sort((a, b) => grouped[b] - grouped[a]);
+
+  $('zona-total').textContent = fmt(total);
+
+  // Números individuales por zona
+  $('zona-grid').innerHTML = labels.map(z => `
+    <div class="zona-item">
+      <div class="zona-item-label">${z}</div>
+      <div class="zona-item-value">${fmt(grouped[z])}</div>
+    </div>
+  `).join('');
+
+  // Pie chart
+  makeChart('chart-zona', {
+    type: 'pie',
+    data: {
+      labels,
+      datasets: [{
+        data: labels.map(l => grouped[l]),
+        backgroundColor: PURPLE_PALETTE.slice(0, labels.length),
+        borderWidth: 2,
+        borderColor: '#fff',
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'right', labels: { padding: 14, boxWidth: 12, usePointStyle: true } }
+      }
+    }
   });
-  const sorted = Object.entries(map).sort((a, b) => b[1] - a[1]);
-  const tbody = $('tabla-comandas').querySelector('tbody');
-  tbody.innerHTML = sorted.map(([k, v]) => {
-    const [suc, zona] = k.split('||');
-    return `<tr>
-      <td>${suc}</td>
-      <td><span class="badge">${zona}</span></td>
-      <td class="num">${fmt(v)}</td>
-    </tr>`;
-  }).join('');
+}
+
+function renderMes() {
+  const grouped = groupBy(filteredDatos, 'mes', 'cantidad');
+  const labels  = Object.keys(grouped).sort();
+  makeChart('chart-mes', {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: labels.map(l => grouped[l]),
+        backgroundColor: labels.map((_, i) =>
+          `rgba(74,45,111,${0.4 + (i / Math.max(labels.length - 1, 1)) * 0.6})`
+        ),
+        borderRadius: 5,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false } },
+        y: { grid: { color: '#E8E0D4' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+function renderRankingProductos() {
+  const grouped = groupBy(filteredDatos, 'producto', 'cantidad');
+  const sorted  = Object.entries(grouped).sort((a, b) => b[1] - a[1]).slice(0, 12);
+  const max     = sorted[0]?.[1] || 1;
+
+  $('ranking-table').innerHTML = sorted.map(([prod, qty], i) => `
+    <div class="rank-item">
+      <span class="rank-num">${String(i + 1).padStart(2, '0')}</span>
+      <div>
+        <div class="rank-name">${prod}</div>
+        <div class="rank-bar-bg">
+          <div class="rank-bar-fill" style="width:${Math.round(qty / max * 100)}%"></div>
+        </div>
+      </div>
+      <span class="rank-val">${fmt(qty)}</span>
+    </div>
+  `).join('');
 }
 
 // ── Fetch & boot ─────────────────────────────────────────────────────────────
@@ -769,29 +812,27 @@ async function loadData() {
     const json = await res.json();
     if (json.error) throw new Error(json.error);
 
-    rawDatos = normalizeDatos(json.datos);
+    rawDatos  = normalizeDatos(json.datos);
     rawDatos2 = normalizeDatos2(json.datos2);
 
     populateFilters();
-
-    filteredDatos = [...rawDatos];
+    filteredDatos  = [...rawDatos];
     filteredDatos2 = [...rawDatos2];
-
     render();
 
-    $('status').textContent = `${fmt(rawDatos.length + rawDatos2.length)} FILAS CARGADAS`;
+    $('status').textContent = `${fmt(rawDatos.length + rawDatos2.length)} filas`;
     $('status').className = 'ok';
     $('loading').classList.add('hidden');
 
   } catch (err) {
     $('loading').classList.add('hidden');
-    $('status').textContent = 'ERROR DE CONEXIÓN';
+    $('status').textContent = 'Error';
     $('status').className = 'error';
     $('error-msg').style.display = 'block';
     $('error-msg').innerHTML = `
       <strong>No se pudo conectar al servidor.</strong><br><br>
       Asegurate de que <code>server.py</code> está corriendo:<br>
-      <code style="color:#f0c860">python server.py</code><br><br>
+      <code style="color:#7B5EA7">python server.py</code><br><br>
       Error: ${err.message}
     `;
   }
