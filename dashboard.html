@@ -4,21 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CHiA — Dashboard Ventas</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg:      #F0EAE0;
-    --surface: #FFFFFF;
-    --surface2:#E8E0D4;
-    --border:  #D5CCC0;
-    --purple:  #4A2D6F;
-    --purple2: #7B5EA7;
-    --lavender:#C4A8D4;
+    --bg:       #F0EAE0;
+    --surface:  #FFFFFF;
+    --surface2: #E8E0D4;
+    --border:   #D5CCC0;
+    --purple:   #4A2D6F;
+    --purple2:  #7B5EA7;
+    --lavender: #C4A8D4;
     --lavender2:#E6D8F0;
-    --text:    #2A1D3E;
-    --muted:   #9B8AAA;
-    --danger:  #C0392B;
+    --text:     #2A1D3E;
+    --muted:    #9B8AAA;
+    --danger:   #C0392B;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,34 +44,33 @@
   }
 
   .logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 1.4rem;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.5rem;
     color: #fff;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     flex-shrink: 0;
   }
 
   .logo em {
     font-style: normal;
-    font-size: 0.75rem;
+    font-size: 0.68rem;
     opacity: 0.55;
-    font-weight: 400;
+    font-weight: 600;
     margin-left: 8px;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
+    text-transform: lowercase;
   }
 
-  .header-sep {
-    width: 1px;
-    height: 24px;
-    background: rgba(255,255,255,0.2);
-  }
+  .header-sep { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
 
   .header-title {
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
     color: rgba(255,255,255,0.65);
-    letter-spacing: 0.18em;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
   }
 
@@ -82,6 +81,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
+    font-family: 'Nunito', sans-serif;
   }
 
   #status::before {
@@ -92,7 +92,7 @@
     transition: background 0.3s;
   }
 
-  #status.ok::before  { background: #8ef08e; }
+  #status.ok::before    { background: #8ef08e; }
   #status.error::before { background: #f08e8e; }
 
   /* ── Filters ── */
@@ -100,7 +100,7 @@
     background: var(--surface);
     border-bottom: 2px solid var(--border);
     display: flex;
-    gap: 20px;
+    gap: 16px;
     padding: 12px 40px;
     align-items: center;
     flex-wrap: wrap;
@@ -113,8 +113,9 @@
   }
 
   .filter-group label {
-    font-size: 0.68rem;
-    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 800;
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -125,8 +126,9 @@
     background: var(--bg);
     border: 1px solid var(--border);
     color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
     padding: 6px 12px;
     border-radius: 6px;
     cursor: pointer;
@@ -140,13 +142,14 @@
   .btn {
     padding: 7px 18px;
     border-radius: 6px;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 800;
     cursor: pointer;
     border: none;
     transition: opacity 0.2s;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
 
   .btn:hover { opacity: 0.82; }
@@ -182,8 +185,8 @@
   .kpi::after {
     content: '';
     position: absolute;
-    bottom: -24px; right: -24px;
-    width: 90px; height: 90px;
+    bottom: -28px; right: -28px;
+    width: 100px; height: 100px;
     border-radius: 50%;
     background: rgba(255,255,255,0.06);
   }
@@ -194,20 +197,21 @@
   }
 
   .kpi-label {
-    font-size: 0.68rem;
-    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     opacity: 0.7;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
 
   .kpi.light .kpi-label { color: var(--purple2); opacity: 1; }
 
   .kpi-value {
-    font-family: 'Syne', sans-serif;
-    font-size: 2.5rem;
-    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.6rem;
+    font-weight: 900;
     line-height: 1;
   }
 
@@ -222,29 +226,50 @@
   }
 
   .card-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 800;
     color: var(--purple);
     margin-bottom: 20px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .filter-chip {
+    background: var(--lavender2);
+    color: var(--purple);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+
+  .filter-chip:hover { background: var(--lavender); }
+
+  .chart-hint {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.62rem;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 14px;
+    letter-spacing: 0.04em;
   }
 
   /* ── Grids ── */
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  .grid-3 {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 20px;
-  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
 
   canvas { max-height: 280px; }
+
+  .clickable-chart { cursor: pointer; }
 
   /* ── Zona breakdown ── */
   .zona-section {
@@ -254,10 +279,10 @@
     align-items: start;
   }
 
-  .zona-total {
-    font-family: 'Syne', sans-serif;
+  .zona-total-label {
+    font-family: 'Nunito', sans-serif;
     font-size: 0.7rem;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     color: var(--muted);
@@ -265,9 +290,9 @@
   }
 
   .zona-total-val {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.8rem;
-    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    font-size: 2rem;
+    font-weight: 900;
     color: var(--text);
     margin-bottom: 20px;
   }
@@ -276,7 +301,6 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-bottom: 0;
   }
 
   .zona-item {
@@ -286,8 +310,9 @@
   }
 
   .zona-item-label {
-    font-size: 0.62rem;
-    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 800;
     color: var(--purple2);
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -295,31 +320,34 @@
   }
 
   .zona-item-value {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.5rem;
-    font-weight: 800;
+    font-weight: 900;
     color: var(--text);
     line-height: 1;
   }
 
-  /* ── Ranking table ── */
+  /* ── Ranking ── */
   .rank-item {
     display: grid;
-    grid-template-columns: 22px 1fr 72px;
+    grid-template-columns: 22px 1fr 76px;
     gap: 10px;
     align-items: start;
     margin-bottom: 12px;
   }
 
   .rank-num {
-    font-size: 0.62rem;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
     color: var(--muted);
     padding-top: 2px;
   }
 
   .rank-name {
-    font-size: 0.78rem;
-    font-weight: 500;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
     margin-bottom: 5px;
   }
 
@@ -338,10 +366,20 @@
 
   .rank-val {
     text-align: right;
-    font-size: 0.82rem;
-    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
     color: var(--purple2);
     padding-top: 2px;
+  }
+
+  .no-data {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 16px 0;
+    text-align: center;
   }
 
   /* ── Loading ── */
@@ -361,15 +399,18 @@
   #loading.hidden { opacity: 0; pointer-events: none; }
 
   .load-logo {
-    font-family: 'Syne', sans-serif;
-    font-size: 2.4rem;
-    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 900;
     color: #fff;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
 
   .load-sub {
-    font-size: 0.72rem;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
     color: rgba(255,255,255,0.5);
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -396,6 +437,7 @@
     font-size: 0.8rem;
     line-height: 1.7;
     margin: 0 40px;
+    font-family: 'Nunito', sans-serif;
   }
 
   /* ── Responsive ── */
@@ -462,21 +504,33 @@
     </div>
   </div>
 
-  <!-- Ranking Familias (full width) -->
+  <!-- Ranking Familias -->
   <div class="card">
-    <div class="card-title">Ranking Familias</div>
-    <canvas id="chart-familia" style="max-height:340px"></canvas>
+    <div class="card-title">
+      Ranking Familias
+      <span id="chip-familia" class="filter-chip" style="display:none" onclick="clearChartFilter('familia')">✕ <span></span></span>
+    </div>
+    <div class="chart-hint">Hacé clic en una barra para filtrar por familia</div>
+    <canvas id="chart-familia" class="clickable-chart" style="max-height:340px"></canvas>
   </div>
 
   <!-- Menus por Sucursal + Documentos por Sucursal -->
   <div class="grid-2">
     <div class="card">
-      <div class="card-title">Menus por Sucursal</div>
-      <canvas id="chart-menus-suc"></canvas>
+      <div class="card-title">
+        Menus por Sucursal
+        <span id="chip-suc-menus" class="filter-chip" style="display:none" onclick="clearChartFilter('sucursal')">✕ <span></span></span>
+      </div>
+      <div class="chart-hint">Hacé clic para filtrar por sucursal</div>
+      <canvas id="chart-menus-suc" class="clickable-chart"></canvas>
     </div>
     <div class="card">
-      <div class="card-title">Documentos por Sucursal</div>
-      <canvas id="chart-docs-suc"></canvas>
+      <div class="card-title">
+        Documentos por Sucursal
+        <span id="chip-suc-docs" class="filter-chip" style="display:none" onclick="clearChartFilter('sucursal')">✕ <span></span></span>
+      </div>
+      <div class="chart-hint">Hacé clic para filtrar por sucursal</div>
+      <canvas id="chart-docs-suc" class="clickable-chart"></canvas>
     </div>
   </div>
 
@@ -484,13 +538,11 @@
   <div class="card">
     <div class="card-title">Documentos × Zona</div>
     <div class="zona-section">
-      <!-- Left: numbers -->
       <div>
-        <div class="zona-total">Total comandas</div>
+        <div class="zona-total-label">Total comandas</div>
         <div class="zona-total-val" id="zona-total">—</div>
         <div class="zona-grid" id="zona-grid"></div>
       </div>
-      <!-- Right: pie chart -->
       <div>
         <canvas id="chart-zona" style="max-height:300px"></canvas>
       </div>
@@ -500,12 +552,16 @@
   <!-- Evolución mensual + Ranking productos -->
   <div class="grid-2">
     <div class="card">
-      <div class="card-title">Evolución de Menus por Mes</div>
-      <canvas id="chart-mes"></canvas>
+      <div class="card-title">
+        Evolución por Mes
+        <span id="chip-mes" class="filter-chip" style="display:none" onclick="clearChartFilter('mes')">✕ <span></span></span>
+      </div>
+      <div class="chart-hint">Hacé clic en un mes para filtrar</div>
+      <canvas id="chart-mes" class="clickable-chart"></canvas>
     </div>
     <div class="card">
       <div class="card-title">Ranking de Productos</div>
-      <div id="ranking-table"></div>
+      <div id="ranking-table"><div class="no-data">Cargando...</div></div>
     </div>
   </div>
 
@@ -524,8 +580,8 @@ const PURPLE_PALETTE = [
 
 Chart.defaults.color = '#9B8AAA';
 Chart.defaults.borderColor = '#E8E0D4';
-Chart.defaults.font.family = "'Inter', sans-serif";
-Chart.defaults.font.size = 11;
+Chart.defaults.font.family = "'Nunito', sans-serif";
+Chart.defaults.font.size = 12;
 
 const charts = {};
 function makeChart(id, config) {
@@ -533,10 +589,38 @@ function makeChart(id, config) {
   charts[id] = new Chart($(id), config);
 }
 
+// ── Mes sorting ──────────────────────────────────────────────────────────────
+const MESES_ES = {
+  'enero':1,'febrero':2,'marzo':3,'abril':4,'mayo':5,'junio':6,
+  'julio':7,'agosto':8,'septiembre':9,'octubre':10,'noviembre':11,'diciembre':12,
+  'ene':1,'feb':2,'mar':3,'abr':4,'may':5,'jun':6,
+  'jul':7,'ago':8,'sep':9,'oct':10,'nov':11,'dic':12
+};
+
+function parseMesOrder(mesStr) {
+  if (!mesStr) return 0;
+  // MM/YYYY
+  const m1 = mesStr.match(/^(\d{1,2})\/(\d{4})$/);
+  if (m1) return parseInt(m1[2]) * 100 + parseInt(m1[1]);
+  // YYYY-MM
+  const m2 = mesStr.match(/^(\d{4})-(\d{2})$/);
+  if (m2) return parseInt(m2[1]) * 100 + parseInt(m2[2]);
+  // "Enero 2024" / "ene-24"
+  const parts = mesStr.toLowerCase().split(/[\s\-\/]+/);
+  let month = 0, year = 0;
+  parts.forEach(p => {
+    if (MESES_ES[p]) month = MESES_ES[p];
+    else if (/^\d{4}$/.test(p)) year = parseInt(p);
+    else if (/^\d{2}$/.test(p)) year = parseInt(p) + 2000;
+  });
+  if (month && year) return year * 100 + month;
+  return 0;
+}
+
 // ── Parse ────────────────────────────────────────────────────────────────────
 function parseRows(rows) {
   if (!rows || rows.length < 2) return [];
-  const headers = rows[0].map(h => h.trim().toLowerCase());
+  const headers = rows[0].map(h => h.trim().toLowerCase().replace(/^﻿/, ''));
   return rows.slice(1).map(row => {
     const obj = {};
     headers.forEach((h, i) => obj[h] = (row[i] || '').trim());
@@ -545,12 +629,26 @@ function parseRows(rows) {
 }
 
 function normalizeDatos(rows) {
-  return parseRows(rows).map(r => ({
+  const parsed = parseRows(rows);
+  if (parsed.length === 0) return [];
+
+  // Detectar columna de producto automáticamente
+  const firstRow = parsed[0];
+  const allKeys = Object.keys(firstRow);
+  const productoKey = allKeys.find(k =>
+    k === 'producto' || k === 'articulo' || k === 'item' ||
+    k === 'descripcion' || k === 'descripción' || k === 'nombre'
+  ) || allKeys.find(k => !['mes/año','mes','fecha','sucursal','turno','cantidad','familia'].includes(k) && k !== '') || 'producto';
+
+  console.log('[DEBUG] columnas Datos:', allKeys);
+  console.log('[DEBUG] columna producto detectada:', productoKey);
+
+  return parsed.map(r => ({
     mes:      r['mes/año'] || r['mes'] || '',
-    fecha:    r['fecha']   || '',
-    producto: r['producto'] || '',
+    fecha:    r['fecha'] || '',
+    producto: r['producto'] || r['articulo'] || r['item'] || r['descripcion'] || r['descripción'] || r[productoKey] || '',
     sucursal: r['sucursal'] || '',
-    turno:    r['turno']   || '',
+    turno:    r['turno'] || '',
     cantidad: parseInt(r['cantidad']) || 0,
     familia:  r['familia'] || '',
   })).filter(r => r.fecha && r.cantidad > 0);
@@ -559,9 +657,9 @@ function normalizeDatos(rows) {
 function normalizeDatos2(rows) {
   return parseRows(rows).map(r => ({
     mes:        r['mes/año'] || r['mes'] || '',
-    fecha:      r['fecha']   || '',
+    fecha:      r['fecha'] || '',
     sucursal:   r['sucursal'] || '',
-    zona:       r['zona']    || '',
+    zona:       r['zona'] || '',
     documentos: parseInt(r['documentos']) || 0,
   })).filter(r => r.fecha && r.documentos > 0);
 }
@@ -572,10 +670,11 @@ let filteredDatos = [], filteredDatos2 = [];
 
 // ── Filtros ──────────────────────────────────────────────────────────────────
 function populateFilters() {
-  const meses     = [...new Set(rawDatos.map(r => r.mes))].filter(Boolean).sort();
-  const sucursales= [...new Set(rawDatos.map(r => r.sucursal))].filter(Boolean).sort();
-  const turnos    = [...new Set(rawDatos.map(r => r.turno))].filter(Boolean).sort();
-  const familias  = [...new Set(rawDatos.map(r => r.familia))].filter(Boolean).sort();
+  const meses = [...new Set(rawDatos.map(r => r.mes))].filter(Boolean)
+    .sort((a, b) => parseMesOrder(b) - parseMesOrder(a)); // más reciente primero
+  const sucursales = [...new Set(rawDatos.map(r => r.sucursal))].filter(Boolean).sort();
+  const turnos     = [...new Set(rawDatos.map(r => r.turno))].filter(Boolean).sort();
+  const familias   = [...new Set(rawDatos.map(r => r.familia))].filter(Boolean).sort();
   populate('f-mes', meses);
   populate('f-sucursal', sucursales);
   populate('f-turno', turnos);
@@ -599,7 +698,8 @@ function applyFilters() {
   const suc    = $('f-sucursal').value;
   const turno  = $('f-turno').value;
   const familia= $('f-familia').value;
-  filteredDatos  = rawDatos.filter(r =>
+
+  filteredDatos = rawDatos.filter(r =>
     (!mes    || r.mes      === mes)    &&
     (!suc    || r.sucursal === suc)    &&
     (!turno  || r.turno    === turno)  &&
@@ -616,6 +716,49 @@ function resetFilters() {
   filteredDatos  = [...rawDatos];
   filteredDatos2 = [...rawDatos2];
   render();
+}
+
+// Aplicar filtro desde un click en gráfico
+function applyChartFilter(type, value) {
+  if (type === 'familia') {
+    $('f-familia').value = value;
+    showChip('chip-familia', value);
+  } else if (type === 'sucursal') {
+    $('f-sucursal').value = value;
+    showChip('chip-suc-menus', value);
+    showChip('chip-suc-docs', value);
+  } else if (type === 'mes') {
+    $('f-mes').value = value;
+    showChip('chip-mes', value);
+  }
+  applyFilters();
+}
+
+function clearChartFilter(type) {
+  if (type === 'familia') {
+    $('f-familia').value = '';
+    hideChip('chip-familia');
+  } else if (type === 'sucursal') {
+    $('f-sucursal').value = '';
+    hideChip('chip-suc-menus');
+    hideChip('chip-suc-docs');
+  } else if (type === 'mes') {
+    $('f-mes').value = '';
+    hideChip('chip-mes');
+  }
+  applyFilters();
+}
+
+function showChip(id, value) {
+  const el = $(id);
+  if (!el) return;
+  el.style.display = 'flex';
+  el.querySelector('span').textContent = value;
+}
+
+function hideChip(id) {
+  const el = $(id);
+  if (el) el.style.display = 'none';
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -659,6 +802,7 @@ function renderRankingFamilias() {
         label: 'Cantidad',
         data: labels.map(l => grouped[l]),
         backgroundColor: '#4A2D6F',
+        hoverBackgroundColor: '#7B5EA7',
         borderRadius: 4,
         borderSkipped: false,
       }]
@@ -669,6 +813,11 @@ function renderRankingFamilias() {
       scales: {
         x: { grid: { color: '#E8E0D4' }, beginAtZero: true },
         y: { grid: { display: false } }
+      },
+      onClick: (evt, elements) => {
+        if (elements.length > 0) {
+          applyChartFilter('familia', labels[elements[0].index]);
+        }
       }
     }
   });
@@ -685,6 +834,7 @@ function renderMenusSucursal() {
         label: 'Menus',
         data: labels.map(l => grouped[l]),
         backgroundColor: '#7B5EA7',
+        hoverBackgroundColor: '#4A2D6F',
         borderRadius: 6,
         borderSkipped: false,
       }]
@@ -694,6 +844,11 @@ function renderMenusSucursal() {
       scales: {
         x: { grid: { display: false } },
         y: { grid: { color: '#E8E0D4' }, beginAtZero: true }
+      },
+      onClick: (evt, elements) => {
+        if (elements.length > 0) {
+          applyChartFilter('sucursal', labels[elements[0].index]);
+        }
       }
     }
   });
@@ -710,6 +865,7 @@ function renderDocsSucursal() {
         label: 'Documentos',
         data: labels.map(l => grouped[l]),
         backgroundColor: '#9B7EC8',
+        hoverBackgroundColor: '#4A2D6F',
         borderRadius: 6,
         borderSkipped: false,
       }]
@@ -719,6 +875,11 @@ function renderDocsSucursal() {
       scales: {
         x: { grid: { display: false } },
         y: { grid: { color: '#E8E0D4' }, beginAtZero: true }
+      },
+      onClick: (evt, elements) => {
+        if (elements.length > 0) {
+          applyChartFilter('sucursal', labels[elements[0].index]);
+        }
       }
     }
   });
@@ -731,7 +892,6 @@ function renderZona() {
 
   $('zona-total').textContent = fmt(total);
 
-  // Números individuales por zona
   $('zona-grid').innerHTML = labels.map(z => `
     <div class="zona-item">
       <div class="zona-item-label">${z}</div>
@@ -739,7 +899,6 @@ function renderZona() {
     </div>
   `).join('');
 
-  // Pie chart
   makeChart('chart-zona', {
     type: 'pie',
     data: {
@@ -753,7 +912,7 @@ function renderZona() {
     },
     options: {
       plugins: {
-        legend: { position: 'right', labels: { padding: 14, boxWidth: 12, usePointStyle: true } }
+        legend: { position: 'right', labels: { padding: 14, boxWidth: 12, usePointStyle: true, font: { family: 'Nunito', weight: '700' } } }
       }
     }
   });
@@ -761,7 +920,8 @@ function renderZona() {
 
 function renderMes() {
   const grouped = groupBy(filteredDatos, 'mes', 'cantidad');
-  const labels  = Object.keys(grouped).sort();
+  const labels  = Object.keys(grouped).sort((a, b) => parseMesOrder(a) - parseMesOrder(b));
+  const n = labels.length;
   makeChart('chart-mes', {
     type: 'bar',
     data: {
@@ -769,8 +929,9 @@ function renderMes() {
       datasets: [{
         data: labels.map(l => grouped[l]),
         backgroundColor: labels.map((_, i) =>
-          `rgba(74,45,111,${0.4 + (i / Math.max(labels.length - 1, 1)) * 0.6})`
+          `rgba(74,45,111,${0.35 + (i / Math.max(n - 1, 1)) * 0.65})`
         ),
+        hoverBackgroundColor: '#4A2D6F',
         borderRadius: 5,
         borderSkipped: false,
       }]
@@ -780,17 +941,38 @@ function renderMes() {
       scales: {
         x: { grid: { display: false } },
         y: { grid: { color: '#E8E0D4' }, beginAtZero: true }
+      },
+      onClick: (evt, elements) => {
+        if (elements.length > 0) {
+          applyChartFilter('mes', labels[elements[0].index]);
+        }
       }
     }
   });
 }
 
 function renderRankingProductos() {
-  const grouped = groupBy(filteredDatos, 'producto', 'cantidad');
-  const sorted  = Object.entries(grouped).sort((a, b) => b[1] - a[1]).slice(0, 12);
-  const max     = sorted[0]?.[1] || 1;
+  const el = $('ranking-table');
 
-  $('ranking-table').innerHTML = sorted.map(([prod, qty], i) => `
+  if (filteredDatos.length === 0) {
+    el.innerHTML = '<div class="no-data">Sin datos para mostrar</div>';
+    return;
+  }
+
+  const grouped = groupBy(filteredDatos, 'producto', 'cantidad');
+  const entries = Object.entries(grouped).filter(([k]) => k !== 'Sin dato' && k !== '');
+
+  if (entries.length === 0) {
+    // Mostrar igual con "Sin dato" para ayudar al debug
+    const total = filteredDatos.reduce((s, r) => s + r.cantidad, 0);
+    el.innerHTML = `<div class="no-data">La columna de productos no fue encontrada en la planilla.<br>Total cantidad: ${fmt(total)}</div>`;
+    return;
+  }
+
+  const sorted = entries.sort((a, b) => b[1] - a[1]).slice(0, 12);
+  const max = sorted[0][1];
+
+  el.innerHTML = sorted.map(([prod, qty], i) => `
     <div class="rank-item">
       <span class="rank-num">${String(i + 1).padStart(2, '0')}</span>
       <div>
@@ -814,6 +996,10 @@ async function loadData() {
 
     rawDatos  = normalizeDatos(json.datos);
     rawDatos2 = normalizeDatos2(json.datos2);
+
+    console.log('[DEBUG] rawDatos rows:', rawDatos.length);
+    console.log('[DEBUG] rawDatos2 rows:', rawDatos2.length);
+    if (rawDatos.length > 0) console.log('[DEBUG] muestra producto:', rawDatos[0].producto);
 
     populateFilters();
     filteredDatos  = [...rawDatos];
