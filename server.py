@@ -7,6 +7,7 @@ import json
 import os
 import base64
 import time
+import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 import urllib.request
@@ -15,7 +16,10 @@ import urllib.parse
 # ── Configuración ──────────────────────────────────────────────────────────────
 SPREADSHEET_ID = "1rCLlFwT6MmzCqs2MUckNvgZeTQAwiwy5q8vbdLtSoS8"
 PORT = int(os.environ.get("PORT", 8765))
+CACHE_TTL = 300  # segundos (5 minutos)
 # ───────────────────────────────────────────────────────────────────────────────
+
+_data_cache = {"body": None, "expires": 0}
 
 
 def load_credentials():
@@ -105,6 +109,43 @@ def fetch_sheet(sheet_name):
         raise RuntimeError(f"HTTP {e.code} al leer '{sheet_name}': {body}")
 
 
+def get_data():
+    now = time.time()
+    if _data_cache["body"] and now < _data_cache["expires"]:
+        return _data_cache["body"]
+
+    # Fetch ambas hojas en paralelo
+    results = {}
+    errors = {}
+
+    def fetch(name):
+        try:
+            results[name] = fetch_sheet(name)
+        except Exception as e:
+            errors[name] = e
+
+    threads = [
+        threading.Thread(target=fetch, args=("Datos",)),
+        threading.Thread(target=fetch, args=("Datos 2",)),
+    ]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    if errors:
+        raise list(errors.values())[0]
+
+    body = json.dumps({
+        "datos":  results["Datos"]["values"],
+        "datos2": results["Datos 2"]["values"],
+    }).encode()
+
+    _data_cache["body"] = body
+    _data_cache["expires"] = now + CACHE_TTL
+    return body
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         print(format % args)
@@ -124,12 +165,7 @@ class Handler(BaseHTTPRequestHandler):
 
         if parsed.path == "/data":
             try:
-                datos = fetch_sheet("Datos")
-                datos2 = fetch_sheet("Datos 2")
-                body = json.dumps({
-                    "datos": datos["values"],
-                    "datos2": datos2["values"]
-                }).encode()
+                body = get_data()
                 self.send_response(200)
                 self._cors()
                 self.send_header("Content-Type", "application/json")
