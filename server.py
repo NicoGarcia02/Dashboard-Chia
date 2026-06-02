@@ -19,11 +19,9 @@ PORT = int(os.environ.get("PORT", 8765))
 
 
 def load_credentials():
-    # Primero intenta desde variable de entorno (Railway)
     env_creds = os.environ.get("GOOGLE_CREDENTIALS")
     if env_creds:
-        return json.loads(env_creds)
-    # Fallback: archivo local
+        return json.loads(base64.b64decode(env_creds).decode("utf-8"))
     creds_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "credentials.json")
     with open(creds_path, "r") as f:
         return json.load(f)
