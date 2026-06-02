@@ -764,7 +764,7 @@ function renderTablaComandas() {
 // ── Fetch & boot ─────────────────────────────────────────────────────────────
 async function loadData() {
   try {
-    const res = await fetch('http://localhost:8765/data');
+    const res = await fetch('/data');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = await res.json();
     if (json.error) throw new Error(json.error);
