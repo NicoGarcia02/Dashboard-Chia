@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
 """
 Servidor proxy para el dashboard de Chia.
-Coloca este archivo en la misma carpeta que credentials.json y dashboard.html
-Luego ejecuta: python server.py
 """
 
 import json
 import os
 import base64
 import time
-import struct
-import hashlib
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 import urllib.request
@@ -18,26 +14,22 @@ import urllib.parse
 
 # ── Configuración ──────────────────────────────────────────────────────────────
 SPREADSHEET_ID = "1rCLlFwT6MmzCqs2MUckNvgZeTQAwiwy5q8vbdLtSoS8"
-CREDENTIALS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "credentials.json")
-PORT = 8765
+PORT = int(os.environ.get("PORT", 8765))
 # ───────────────────────────────────────────────────────────────────────────────
 
 
 def load_credentials():
-    with open(CREDENTIALS_FILE, "r") as f:
+    # Primero intenta desde variable de entorno (Railway)
+    env_creds = os.environ.get("GOOGLE_CREDENTIALS")
+    if env_creds:
+        return json.loads(env_creds)
+    # Fallback: archivo local
+    creds_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "credentials.json")
+    with open(creds_path, "r") as f:
         return json.load(f)
 
 
 def rsa_sign(private_key_pem, message):
-    """RSA-SHA256 signing using Python's cryptography via rsa module or fallback."""
-    try:
-        import rsa
-        key = rsa.PrivateKey.load_pkcs1_openssl_pem(private_key_pem.encode())
-        return rsa.sign(message, key, 'SHA-256')
-    except ImportError:
-        pass
-
-    # Fallback: use cryptography package
     try:
         from cryptography.hazmat.primitives import hashes, serialization
         from cryptography.hazmat.primitives.asymmetric import padding
@@ -49,12 +41,7 @@ def rsa_sign(private_key_pem, message):
         )
         return key.sign(message, padding.PKCS1v15(), hashes.SHA256())
     except ImportError:
-        pass
-
-    raise RuntimeError(
-        "Necesitás instalar una librería de criptografía.\n"
-        "Ejecutá: pip install cryptography"
-    )
+        raise RuntimeError("Ejecutá: pip install cryptography")
 
 
 def make_jwt(creds):
@@ -75,7 +62,6 @@ def make_jwt(creds):
     signing_input = header + b"." + payload
     signature = rsa_sign(creds["private_key"], signing_input)
     sig_b64 = base64.urlsafe_b64encode(signature).rstrip(b"=")
-
     return (signing_input + b"." + sig_b64).decode()
 
 
@@ -162,7 +148,8 @@ class Handler(BaseHTTPRequestHandler):
 
         elif parsed.path == "/":
             try:
-                with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "dashboard.html"), "rb") as f:
+                html_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dashboard.html")
+                with open(html_path, "rb") as f:
                     content = f.read()
                 self.send_response(200)
                 self.send_header("Content-Type", "text/html; charset=utf-8")
@@ -181,4 +168,4 @@ if __name__ == "__main__":
     print(f"✓ Servidor corriendo en http://localhost:{PORT}")
     print(f"  Abrí http://localhost:{PORT} en tu browser")
     print(f"  Ctrl+C para detener\n")
-    HTTPServer(("localhost", PORT), Handler).serve_forever()
+    HTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
