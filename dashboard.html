@@ -30,6 +30,13 @@
     min-height: 100vh;
   }
 
+  /* ── Sticky top wrapper ── */
+  .sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
   /* ── Header ── */
   header {
     background: var(--purple);
@@ -38,9 +45,6 @@
     align-items: center;
     gap: 24px;
     height: 60px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
   }
 
   .logo {
@@ -104,9 +108,6 @@
     padding: 12px 40px;
     align-items: center;
     flex-wrap: wrap;
-    position: sticky;
-    top: 60px;
-    z-index: 99;
   }
 
   .filter-group {
@@ -473,6 +474,7 @@
 
 <div id="error-msg"></div>
 
+<div class="sticky-top">
 <header>
   <div class="logo">CHiA <em>good food</em></div>
   <div class="header-sep"></div>
@@ -499,6 +501,7 @@
   </div>
   <button class="btn btn-primary" onclick="applyFilters()">Aplicar</button>
   <button class="btn btn-secondary" onclick="resetFilters()">Limpiar</button>
+</div>
 </div>
 
 <main>
