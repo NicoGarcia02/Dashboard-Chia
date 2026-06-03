@@ -104,6 +104,9 @@
     padding: 12px 40px;
     align-items: center;
     flex-wrap: wrap;
+    position: sticky;
+    top: 60px;
+    z-index: 99;
   }
 
   .filter-group {
@@ -386,7 +389,7 @@
   #loading {
     position: fixed;
     inset: 0;
-    background: var(--bg);
+    background: var(--purple);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -402,54 +405,34 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 0;
     animation: fadeInUp 0.5s ease both;
   }
 
   @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  .load-wordmark {
-    font-family: 'Nunito', sans-serif;
-    font-weight: 900;
-    font-size: 5.5rem;
-    color: var(--purple);
-    letter-spacing: 0.06em;
-    line-height: 1;
-    display: flex;
-    align-items: baseline;
-  }
-
-  .load-wordmark .wi {
-    font-size: 3.8rem;
-    font-weight: 900;
-    letter-spacing: 0;
-  }
-
-  .load-tagline {
-    font-family: 'Nunito', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--purple2);
-    letter-spacing: 0.22em;
-    text-align: center;
+  .load-logo-img {
+    width: 180px;
+    height: auto;
+    border-radius: 16px;
   }
 
   .load-sub {
     font-family: 'Nunito', sans-serif;
     font-size: 0.7rem;
     font-weight: 700;
-    color: var(--muted);
+    color: rgba(255,255,255,0.5);
     letter-spacing: 0.2em;
     text-transform: uppercase;
   }
 
   .spinner {
     width: 36px; height: 36px;
-    border: 3px solid var(--lavender2);
-    border-top-color: var(--purple);
+    border: 3px solid rgba(255,255,255,0.2);
+    border-top-color: rgba(255,255,255,0.9);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -482,8 +465,7 @@
 
 <div id="loading">
   <div class="load-brand">
-    <div class="load-wordmark">CH<span class="wi">i</span>A</div>
-    <div class="load-tagline">good food</div>
+    <img class="load-logo-img" src="/logo.png" alt="CHiA good food">
   </div>
   <div class="spinner"></div>
   <div class="load-sub">Cargando datos...</div>

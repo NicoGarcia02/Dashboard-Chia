@@ -193,6 +193,20 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_response(404)
                 self.end_headers()
                 self.wfile.write(b"dashboard.html not found")
+
+        elif parsed.path == "/logo.png":
+            try:
+                logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo.png")
+                with open(logo_path, "rb") as f:
+                    content = f.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "image/png")
+                self.send_header("Cache-Control", "public, max-age=86400")
+                self.end_headers()
+                self.wfile.write(content)
+            except FileNotFoundError:
+                self.send_response(404)
+                self.end_headers()
         else:
             self.send_response(404)
             self.end_headers()
