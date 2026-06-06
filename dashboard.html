@@ -824,13 +824,13 @@ function populateFilters() {
   populate('f-turno', turnos);
   populate('f-familia', familias);
 
-  // Precargar rango con min/max fechas del dataset
+  // Precargar rango con min/max fechas del dataset (reduce evita stack overflow con arrays grandes)
   const fechas = rawDatos.map(r => parseDate(r.fecha)).filter(Boolean).map(d => d.getTime());
   if (fechas.length) {
-    const minD = new Date(Math.min(...fechas));
-    const maxD = new Date(Math.max(...fechas));
-    $('f-desde').value = minD.toISOString().split('T')[0];
-    $('f-hasta').value = maxD.toISOString().split('T')[0];
+    const minTime = fechas.reduce((m, t) => t < m ? t : m, fechas[0]);
+    const maxTime = fechas.reduce((m, t) => t > m ? t : m, fechas[0]);
+    $('f-desde').value = new Date(minTime).toISOString().split('T')[0];
+    $('f-hasta').value = new Date(maxTime).toISOString().split('T')[0];
   }
 }
 
