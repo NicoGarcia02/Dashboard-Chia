@@ -30,11 +30,7 @@
     min-height: 100vh;
   }
 
-  .sticky-top {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
+  .sticky-top { position: sticky; top: 0; z-index: 100; }
 
   /* ── Header ── */
   header {
@@ -66,7 +62,7 @@
     text-transform: lowercase;
   }
 
-  .header-sep { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+  .header-sep { width: 1px; height: 24px; background: rgba(255,255,255,0.2); flex-shrink: 0; }
 
   .header-title {
     font-family: 'Nunito', sans-serif;
@@ -85,6 +81,7 @@
     align-items: center;
     gap: 6px;
     font-family: 'Nunito', sans-serif;
+    white-space: nowrap;
   }
 
   #status::before {
@@ -93,6 +90,7 @@
     border-radius: 50%;
     background: rgba(255,255,255,0.25);
     transition: background 0.3s;
+    flex-shrink: 0;
   }
 
   #status.ok::before    { background: #8ef08e; }
@@ -103,7 +101,7 @@
     background: var(--surface);
     border-bottom: 2px solid var(--border);
     display: flex;
-    gap: 16px;
+    gap: 12px;
     padding: 12px 40px;
     align-items: center;
     flex-wrap: wrap;
@@ -125,7 +123,7 @@
     white-space: nowrap;
   }
 
-  select {
+  select, input[type="date"] {
     background: var(--bg);
     border: 1px solid var(--border);
     color: var(--text);
@@ -137,25 +135,10 @@
     cursor: pointer;
     outline: none;
     transition: border-color 0.2s;
-    min-width: 130px;
+    min-width: 120px;
   }
 
-  select:focus, select:hover { border-color: var(--purple2); }
-
-  input[type="date"] {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'Nunito', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
+  select:focus, select:hover,
   input[type="date"]:focus, input[type="date"]:hover { border-color: var(--purple2); }
 
   /* ── Mode toggle ── */
@@ -181,10 +164,7 @@
     white-space: nowrap;
   }
 
-  .mode-btn.active {
-    background: var(--purple);
-    color: #fff;
-  }
+  .mode-btn.active { background: var(--purple); color: #fff; }
 
   .btn {
     padding: 7px 18px;
@@ -197,18 +177,20 @@
     transition: opacity 0.2s;
     letter-spacing: 0.05em;
     text-transform: uppercase;
+    white-space: nowrap;
   }
 
   .btn:hover { opacity: 0.82; }
+  .btn:active { opacity: 0.65; }
   .btn-primary   { background: var(--purple);  color: #fff; }
   .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 
   /* ── Main ── */
   main {
-    padding: 32px 40px;
+    padding: 28px 40px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
     max-width: 1400px;
     margin: 0 auto;
   }
@@ -223,7 +205,7 @@
   .kpi {
     background: var(--purple);
     border-radius: 12px;
-    padding: 24px 28px;
+    padding: 22px 24px;
     color: #fff;
     position: relative;
     overflow: hidden;
@@ -236,69 +218,91 @@
     width: 100px; height: 100px;
     border-radius: 50%;
     background: rgba(255,255,255,0.06);
+    pointer-events: none;
   }
 
-  .kpi.light {
-    background: var(--lavender2);
-    color: var(--text);
-  }
-
-  .kpi.forecast {
-    background: linear-gradient(135deg, #1e3a2f 0%, #2e6e4e 100%);
-    color: #fff;
-  }
+  .kpi.light  { background: var(--lavender2); color: var(--text); }
+  .kpi.forecast { background: linear-gradient(135deg, #1e3a2f 0%, #2e6e4e 100%); color: #fff; }
 
   .kpi-label {
     font-family: 'Nunito', sans-serif;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     opacity: 0.7;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .kpi.light .kpi-label { color: var(--purple2); opacity: 1; }
-  .kpi.forecast .kpi-label { opacity: 0.75; }
 
   .kpi-value {
     font-family: 'Nunito', sans-serif;
-    font-size: 2.6rem;
+    font-size: 2.4rem;
     font-weight: 900;
     line-height: 1;
   }
 
   .kpi.light .kpi-value { color: var(--purple); }
 
+  .kpi-change {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-top: 8px;
+    letter-spacing: 0.02em;
+    min-height: 1.1em;
+  }
+  .kpi-change.up   { color: #8ef08e; }
+  .kpi-change.down { color: #f08e8e; }
+  .kpi.light .kpi-change.up   { color: #2e7d32; }
+  .kpi.light .kpi-change.down { color: #c62828; }
+
   .kpi-sub {
     font-family: 'Nunito', sans-serif;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 600;
     opacity: 0.55;
     margin-top: 8px;
-    letter-spacing: 0.04em;
     line-height: 1.4;
   }
+
+  /* ── Summary card ── */
+  .summary-card {
+    background: var(--lavender2);
+    border: 1px solid var(--lavender);
+    border-radius: 12px;
+    padding: 16px 22px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.8;
+    display: none;
+  }
+
+  .summary-card strong { color: var(--purple); font-weight: 800; }
 
   /* ── Cards ── */
   .card {
     background: var(--surface);
     border-radius: 12px;
-    padding: 24px;
+    padding: 22px;
     border: 1px solid var(--border);
   }
 
   .card-title {
     font-family: 'Nunito', sans-serif;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 800;
     color: var(--purple);
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
   }
 
   .filter-chip {
@@ -331,7 +335,6 @@
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
 
   canvas { max-height: 280px; }
-
   .clickable-chart { cursor: pointer; }
 
   /* ── Zona breakdown ── */
@@ -369,22 +372,22 @@
   .zona-item {
     background: var(--bg);
     border-radius: 8px;
-    padding: 14px 16px;
+    padding: 12px 14px;
   }
 
   .zona-item-label {
     font-family: 'Nunito', sans-serif;
-    font-size: 0.65rem;
+    font-size: 0.63rem;
     font-weight: 800;
     color: var(--purple2);
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
 
   .zona-item-value {
     font-family: 'Nunito', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 900;
     color: var(--text);
     line-height: 1;
@@ -414,11 +417,7 @@
     margin-bottom: 5px;
   }
 
-  .rank-bar-bg {
-    height: 4px;
-    background: var(--lavender2);
-    border-radius: 2px;
-  }
+  .rank-bar-bg { height: 4px; background: var(--lavender2); border-radius: 2px; }
 
   .rank-bar-fill {
     height: 4px;
@@ -461,13 +460,7 @@
 
   #loading.hidden { opacity: 0; pointer-events: none; }
 
-  .load-brand {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-    animation: fadeInUp 0.5s ease both;
-  }
+  .load-brand { display: flex; flex-direction: column; align-items: center; animation: fadeInUp 0.5s ease both; }
 
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(14px); }
@@ -481,7 +474,6 @@
     color: #fff;
     letter-spacing: 0.08em;
     line-height: 1;
-    text-align: center;
   }
 
   .load-tagline {
@@ -490,7 +482,6 @@
     font-weight: 600;
     color: rgba(255,255,255,0.55);
     letter-spacing: 0.25em;
-    text-align: center;
   }
 
   .load-sub {
@@ -526,14 +517,122 @@
     font-family: 'Nunito', sans-serif;
   }
 
-  /* ── Responsive ── */
+  /* ════════════════════════════════════════
+     RESPONSIVE — TABLET
+  ════════════════════════════════════════ */
   @media (max-width: 1100px) {
     .kpi-row { grid-template-columns: repeat(2, 1fr); }
   }
+
   @media (max-width: 900px) {
-    .kpi-row, .grid-2, .grid-3, .zona-section { grid-template-columns: 1fr; }
-    header, .filters, main { padding-left: 20px; padding-right: 20px; }
-    .zona-grid { grid-template-columns: 1fr 1fr; }
+    .grid-2, .grid-3, .zona-section { grid-template-columns: 1fr; }
+    header, .filters, main, #error-msg { padding-left: 20px; padding-right: 20px; }
+  }
+
+  /* ════════════════════════════════════════
+     RESPONSIVE — MOBILE
+  ════════════════════════════════════════ */
+  @media (max-width: 600px) {
+
+    /* Header */
+    header {
+      height: 52px;
+      padding: 0 16px;
+      gap: 12px;
+    }
+    .logo { font-size: 1.2rem; }
+    .header-title { display: none; }
+    .header-sep { display: none; }
+    #status { font-size: 0.62rem; }
+
+    /* Filters */
+    .filters {
+      padding: 10px 16px;
+      gap: 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .filter-group {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 4px;
+      grid-column: span 1;
+    }
+
+    /* Período y rango ocupan todo el ancho */
+    .filter-group:first-child,
+    #group-rango {
+      grid-column: 1 / -1;
+    }
+
+    #group-rango {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mode-toggle { width: 100%; }
+    .mode-btn { flex: 1; text-align: center; padding: 8px 10px; font-size: 0.8rem; }
+
+    select, input[type="date"] {
+      width: 100%;
+      min-width: 0;
+      font-size: 0.85rem;
+      padding: 8px 10px;
+    }
+
+    .filter-group label {
+      font-size: 0.68rem;
+      margin-bottom: 2px;
+    }
+
+    /* Botones en fila al final */
+    .filters > .btn {
+      padding: 9px 10px;
+      font-size: 0.78rem;
+    }
+
+    /* Main */
+    main { padding: 14px 16px; gap: 14px; }
+
+    /* KPIs */
+    .kpi-row {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .kpi { padding: 16px 14px; border-radius: 10px; }
+    .kpi-value { font-size: 1.9rem; }
+    .kpi-label { font-size: 0.62rem; margin-bottom: 8px; }
+    .kpi-change { font-size: 0.63rem; }
+    .kpi-sub { font-size: 0.58rem; }
+
+    /* Summary */
+    .summary-card { font-size: 0.82rem; padding: 14px 16px; }
+
+    /* Cards */
+    .card { padding: 16px; border-radius: 10px; }
+    .card-title { font-size: 0.75rem; margin-bottom: 14px; }
+
+    /* Charts */
+    canvas { max-height: 220px !important; }
+
+    /* Zona */
+    .zona-section { gap: 20px; }
+    .zona-total-val { font-size: 1.6rem; margin-bottom: 14px; }
+    .zona-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .zona-item { padding: 10px 12px; }
+    .zona-item-value { font-size: 1.2rem; }
+
+    /* Ranking */
+    .rank-item { grid-template-columns: 18px 1fr 58px; gap: 8px; }
+    .rank-name { font-size: 0.76rem; }
+    .rank-val { font-size: 0.78rem; }
+
+    /* Error */
+    #error-msg { margin: 0 16px; }
   }
 </style>
 </head>
@@ -559,7 +658,6 @@
 </header>
 
 <div class="filters">
-  <!-- Modo período -->
   <div class="filter-group">
     <label>Período</label>
     <div class="mode-toggle">
@@ -568,13 +666,11 @@
     </div>
   </div>
 
-  <!-- Filtro por mes (modo Mes) -->
   <div class="filter-group" id="group-mes">
     <label>Mes/Año</label>
     <select id="f-mes"><option value="">Todos</option></select>
   </div>
 
-  <!-- Filtro por rango de fechas (modo Rango) -->
   <div class="filter-group" id="group-rango" style="display:none">
     <label>Desde</label>
     <input type="date" id="f-desde">
@@ -594,7 +690,7 @@
     <label>Familia</label>
     <select id="f-familia"><option value="">Todas</option></select>
   </div>
-  <button class="btn btn-primary" onclick="applyFilters()">Aplicar</button>
+  <button class="btn btn-primary"   onclick="applyFilters()">Aplicar</button>
   <button class="btn btn-secondary" onclick="resetFilters()">Limpiar</button>
 </div>
 </div>
@@ -606,14 +702,17 @@
     <div class="kpi">
       <div class="kpi-label">Total Menus</div>
       <div class="kpi-value" id="kpi-menus">—</div>
+      <div class="kpi-change" id="kpi-menus-change"></div>
     </div>
     <div class="kpi light">
       <div class="kpi-label">Menus por Comanda</div>
       <div class="kpi-value" id="kpi-ratio">—</div>
+      <div class="kpi-change" id="kpi-ratio-change"></div>
     </div>
     <div class="kpi">
       <div class="kpi-label">Total Comandas</div>
       <div class="kpi-value" id="kpi-comandas">—</div>
+      <div class="kpi-change" id="kpi-comandas-change"></div>
     </div>
     <div class="kpi forecast">
       <div class="kpi-label">Proyección Menus</div>
@@ -621,6 +720,9 @@
       <div class="kpi-sub" id="kpi-proyeccion-sub"></div>
     </div>
   </div>
+
+  <!-- Resumen automático -->
+  <div class="summary-card" id="summary-card"></div>
 
   <!-- Ranking Familias -->
   <div class="card">
@@ -632,7 +734,7 @@
     <canvas id="chart-familia" class="clickable-chart" style="max-height:340px"></canvas>
   </div>
 
-  <!-- Menus por Sucursal + Documentos por Sucursal -->
+  <!-- Menus/Docs por Sucursal -->
   <div class="grid-2">
     <div class="card">
       <div class="card-title">
@@ -667,7 +769,7 @@
     </div>
   </div>
 
-  <!-- Evolución mensual + Ranking productos -->
+  <!-- Evolución mensual + Evolución diaria -->
   <div class="grid-2">
     <div class="card">
       <div class="card-title">
@@ -678,9 +780,16 @@
       <canvas id="chart-mes" class="clickable-chart"></canvas>
     </div>
     <div class="card">
-      <div class="card-title">Ranking de Productos</div>
-      <div id="ranking-table"><div class="no-data">Cargando...</div></div>
+      <div class="card-title" id="title-daily">Evolución Diaria</div>
+      <div class="chart-hint">Menus por día dentro del mes</div>
+      <canvas id="chart-daily"></canvas>
     </div>
+  </div>
+
+  <!-- Ranking productos -->
+  <div class="card">
+    <div class="card-title">Ranking de Productos</div>
+    <div id="ranking-table"><div class="no-data">Cargando...</div></div>
   </div>
 
 </main>
@@ -689,6 +798,11 @@
 const $ = id => document.getElementById(id);
 const fmt  = n => Number(n).toLocaleString('es-AR');
 const fmt2 = n => Number(n).toFixed(2).replace('.', ',');
+
+const MESES_NOMBRES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                       'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const MESES_SHORT   = ['','Ene','Feb','Mar','Abr','May','Jun',
+                       'Jul','Ago','Sep','Oct','Nov','Dic'];
 
 const PURPLE_PALETTE = [
   '#4A2D6F','#7B5EA7','#C4A8D4','#9B7EC8',
@@ -732,21 +846,18 @@ function parseMesOrder(mesStr) {
   return 0;
 }
 
-// Devuelve { year, month } o null
 function parseMonthFromStr(mesStr) {
   const order = parseMesOrder(mesStr);
   if (!order) return null;
   return { year: Math.floor(order / 100), month: order % 100 };
 }
 
-// Parse fecha DD/MM/YYYY o YYYY-MM-DD → Date
 function parseDate(str) {
   if (!str) return null;
   const m1 = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (m1) return new Date(parseInt(m1[3]), parseInt(m1[2]) - 1, parseInt(m1[1]));
   const m2 = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (m2) return new Date(parseInt(m2[1]), parseInt(m2[2]) - 1, parseInt(m2[3]));
-  // DD-MM-YYYY
   const m3 = str.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
   if (m3) return new Date(parseInt(m3[3]), parseInt(m3[2]) - 1, parseInt(m3[1]));
   return null;
@@ -766,9 +877,8 @@ function parseRows(rows) {
 function normalizeDatos(rows) {
   const parsed = parseRows(rows);
   if (parsed.length === 0) return [];
-
   const firstRow = parsed[0];
-  const allKeys = Object.keys(firstRow);
+  const allKeys  = Object.keys(firstRow);
   const productoKey = allKeys.find(k =>
     k === 'producto' || k === 'articulo' || k === 'item' ||
     k === 'descripcion' || k === 'descripción' || k === 'nombre'
@@ -801,9 +911,9 @@ function normalizeDatos2(rows) {
 // ── Estado ───────────────────────────────────────────────────────────────────
 let rawDatos = [], rawDatos2 = [];
 let filteredDatos = [], filteredDatos2 = [];
-let filterMode = 'mes'; // 'mes' | 'rango'
+let filterMode = 'mes';
 
-// ── Modo de período ──────────────────────────────────────────────────────────
+// ── Modo período ─────────────────────────────────────────────────────────────
 function setFilterMode(mode) {
   filterMode = mode;
   $('btn-mode-mes').classList.toggle('active', mode === 'mes');
@@ -812,9 +922,9 @@ function setFilterMode(mode) {
   $('group-rango').style.display = mode === 'rango' ? 'flex' : 'none';
 }
 
-// ── Filtros ──────────────────────────────────────────────────────────────────
+// ── Filtros ───────────────────────────────────────────────────────────────────
 function populateFilters() {
-  const meses = [...new Set(rawDatos.map(r => r.mes))].filter(Boolean)
+  const meses     = [...new Set(rawDatos.map(r => r.mes))].filter(Boolean)
     .sort((a, b) => parseMesOrder(b) - parseMesOrder(a));
   const sucursales = [...new Set(rawDatos.map(r => r.sucursal))].filter(Boolean).sort();
   const turnos     = [...new Set(rawDatos.map(r => r.turno))].filter(Boolean).sort();
@@ -824,7 +934,6 @@ function populateFilters() {
   populate('f-turno', turnos);
   populate('f-familia', familias);
 
-  // Precargar rango con min/max fechas del dataset (reduce evita stack overflow con arrays grandes)
   const fechas = rawDatos.map(r => parseDate(r.fecha)).filter(Boolean).map(d => d.getTime());
   if (fechas.length) {
     const minTime = fechas.reduce((m, t) => t < m ? t : m, fechas[0]);
@@ -858,9 +967,9 @@ function applyFilters() {
     if (filterMode === 'mes') {
       if (mes && r.mes !== mes) return false;
     } else {
-      const fecha = parseDate(r.fecha);
-      if (desde && fecha && fecha < desde) return false;
-      if (hasta && fecha && fecha > hasta) return false;
+      const f = parseDate(r.fecha);
+      if (desde && f && f < desde) return false;
+      if (hasta && f && f > hasta) return false;
     }
     if (suc    && r.sucursal !== suc)    return false;
     if (turno  && r.turno    !== turno)  return false;
@@ -872,9 +981,9 @@ function applyFilters() {
     if (filterMode === 'mes') {
       if (mes && r.mes !== mes) return false;
     } else {
-      const fecha = parseDate(r.fecha);
-      if (desde && fecha && fecha < desde) return false;
-      if (hasta && fecha && fecha > hasta) return false;
+      const f = parseDate(r.fecha);
+      if (desde && f && f < desde) return false;
+      if (hasta && f && f > hasta) return false;
     }
     if (suc && r.sucursal !== suc) return false;
     return true;
@@ -893,108 +1002,97 @@ function resetFilters() {
   render();
 }
 
-// Aplicar filtro desde click en gráfico
 function applyChartFilter(type, value) {
   if (filterMode !== 'mes') setFilterMode('mes');
   if (type === 'familia') {
-    $('f-familia').value = value;
-    showChip('chip-familia', value);
+    $('f-familia').value = value; showChip('chip-familia', value);
   } else if (type === 'sucursal') {
-    $('f-sucursal').value = value;
-    showChip('chip-suc-menus', value);
-    showChip('chip-suc-docs', value);
+    $('f-sucursal').value = value; showChip('chip-suc-menus', value); showChip('chip-suc-docs', value);
   } else if (type === 'mes') {
-    $('f-mes').value = value;
-    showChip('chip-mes', value);
+    $('f-mes').value = value; showChip('chip-mes', value);
   }
   applyFilters();
 }
 
 function clearChartFilter(type) {
-  if (type === 'familia') {
-    $('f-familia').value = '';
-    hideChip('chip-familia');
-  } else if (type === 'sucursal') {
-    $('f-sucursal').value = '';
-    hideChip('chip-suc-menus');
-    hideChip('chip-suc-docs');
-  } else if (type === 'mes') {
-    $('f-mes').value = '';
-    hideChip('chip-mes');
-  }
+  if (type === 'familia') { $('f-familia').value = ''; hideChip('chip-familia'); }
+  else if (type === 'sucursal') { $('f-sucursal').value = ''; hideChip('chip-suc-menus'); hideChip('chip-suc-docs'); }
+  else if (type === 'mes') { $('f-mes').value = ''; hideChip('chip-mes'); }
   applyFilters();
 }
 
 function showChip(id, value) {
-  const el = $(id);
-  if (!el) return;
-  el.style.display = 'flex';
-  el.querySelector('span').textContent = value;
+  const el = $(id); if (!el) return;
+  el.style.display = 'flex'; el.querySelector('span').textContent = value;
 }
+function hideChip(id) { const el = $(id); if (el) el.style.display = 'none'; }
 
-function hideChip(id) {
-  const el = $(id);
-  if (el) el.style.display = 'none';
-}
-
-// ── Proyección mensual ────────────────────────────────────────────────────────
+// ── Proyección ───────────────────────────────────────────────────────────────
 function calcProjection() {
-  // Determinar el mes objetivo
-  let targetYear, targetMonth;
-
-  if (filterMode === 'mes' && $('f-mes').value) {
-    const parsed = parseMonthFromStr($('f-mes').value);
-    if (parsed) { targetYear = parsed.year; targetMonth = parsed.month; }
-  }
-
-  // Si no hay mes seleccionado, usar el mes calendar actual
-  if (!targetYear) {
-    const now = new Date();
-    targetYear  = now.getFullYear();
-    targetMonth = now.getMonth() + 1;
-  }
-
-  // Si estamos en modo rango, no tiene sentido proyectar → mostrar N/A
   if (filterMode === 'rango') return null;
 
-  const suc    = $('f-sucursal').value;
-  const turno  = $('f-turno').value;
-  const familia= $('f-familia').value;
+  let targetYear, targetMonth;
+  if ($('f-mes').value) {
+    const p = parseMonthFromStr($('f-mes').value);
+    if (p) { targetYear = p.year; targetMonth = p.month; }
+  }
+  if (!targetYear) {
+    const now = new Date(); targetYear = now.getFullYear(); targetMonth = now.getMonth() + 1;
+  }
 
-  // Sumar menus del mes objetivo (sobre rawDatos, con filtros aplicados)
+  const suc = $('f-sucursal').value, turno = $('f-turno').value, familia = $('f-familia').value;
+
   const monthRows = rawDatos.filter(r => {
-    const order = parseMesOrder(r.mes);
-    if (!order) return false;
-    const ry = Math.floor(order / 100);
-    const rm = order % 100;
-    return ry === targetYear && rm === targetMonth &&
-      (!suc    || r.sucursal === suc)   &&
-      (!turno  || r.turno    === turno) &&
-      (!familia|| r.familia  === familia);
+    const order = parseMesOrder(r.mes); if (!order) return false;
+    return Math.floor(order/100) === targetYear && order%100 === targetMonth &&
+      (!suc || r.sucursal === suc) && (!turno || r.turno === turno) && (!familia || r.familia === familia);
   });
 
   const totalSoFar = monthRows.reduce((s, r) => s + r.cantidad, 0);
   if (totalSoFar === 0) return null;
 
   const totalDays = new Date(targetYear, targetMonth, 0).getDate();
-
-  // Buscar el último día con datos cargados para ese mes
-  const diasConDatos = monthRows
-    .map(r => parseDate(r.fecha))
-    .filter(Boolean)
+  const dias = monthRows.map(r => parseDate(r.fecha)).filter(Boolean)
     .filter(d => d.getFullYear() === targetYear && d.getMonth() + 1 === targetMonth)
     .map(d => d.getDate());
+  const lastDay = dias.length > 0 ? dias.reduce((m, d) => d > m ? d : m, dias[0]) : totalDays;
 
-  const lastDayWithData = diasConDatos.length > 0
-    ? diasConDatos.reduce((max, d) => d > max ? d : max, diasConDatos[0])
-    : totalDays;
+  if (lastDay === 0) return null;
+  return {
+    projected: Math.round((totalSoFar / lastDay) * totalDays),
+    totalSoFar, daysElapsed: lastDay, totalDays,
+    isPartialMonth: lastDay < totalDays, targetYear, targetMonth
+  };
+}
 
-  const daysElapsed = lastDayWithData;
-  if (daysElapsed === 0) return null;
+// ── Variación vs mes anterior ────────────────────────────────────────────────
+function getPrevMonthTotals(targetYear, targetMonth) {
+  let pm = targetMonth - 1, py = targetYear;
+  if (pm === 0) { pm = 12; py--; }
 
-  const isPartialMonth = daysElapsed < totalDays;
-  const projected = Math.round((totalSoFar / daysElapsed) * totalDays);
-  return { projected, totalSoFar, daysElapsed, totalDays, isPartialMonth, targetYear, targetMonth };
+  const suc = $('f-sucursal').value, turno = $('f-turno').value, familia = $('f-familia').value;
+
+  const prevMenus = rawDatos.filter(r => {
+    const o = parseMesOrder(r.mes); if (!o) return false;
+    return Math.floor(o/100) === py && o%100 === pm &&
+      (!suc || r.sucursal === suc) && (!turno || r.turno === turno) && (!familia || r.familia === familia);
+  }).reduce((s, r) => s + r.cantidad, 0);
+
+  const prevComandas = rawDatos2.filter(r => {
+    const o = parseMesOrder(r.mes); if (!o) return false;
+    return Math.floor(o/100) === py && o%100 === pm && (!suc || r.sucursal === suc);
+  }).reduce((s, r) => s + r.documentos, 0);
+
+  return { prevMenus, prevComandas, pm, py };
+}
+
+function setKpiChange(elId, current, prev, isLight) {
+  const el = $(elId);
+  if (!el || !prev || prev === 0) { el && (el.textContent = ''); return; }
+  const pct = ((current - prev) / prev * 100);
+  const sign = pct >= 0 ? '+' : '';
+  el.textContent = `${sign}${pct.toFixed(1)}% vs mes ant.`;
+  el.className = `kpi-change ${pct >= 0 ? 'up' : 'down'}`;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -1010,11 +1108,13 @@ function groupBy(arr, key, valKey) {
 // ── Render ───────────────────────────────────────────────────────────────────
 function render() {
   renderKPIs();
+  renderSummary();
   renderRankingFamilias();
   renderMenusSucursal();
   renderDocsSucursal();
   renderZona();
   renderMes();
+  renderDiario();
   renderRankingProductos();
 }
 
@@ -1022,26 +1122,89 @@ function renderKPIs() {
   const totalMenus    = filteredDatos.reduce((s, r) => s + r.cantidad, 0);
   const totalComandas = filteredDatos2.reduce((s, r) => s + r.documentos, 0);
   const ratio = totalComandas > 0 ? (totalMenus / totalComandas) : 0;
+
   $('kpi-menus').textContent    = fmt(totalMenus);
   $('kpi-comandas').textContent = fmt(totalComandas);
   $('kpi-ratio').textContent    = fmt2(ratio);
+
+  // Variación vs mes anterior (solo en modo mes con mes específico seleccionado)
+  const mesVal = filterMode === 'mes' ? $('f-mes').value : '';
+  if (mesVal) {
+    const p = parseMonthFromStr(mesVal);
+    if (p) {
+      const prev = getPrevMonthTotals(p.year, p.month);
+      setKpiChange('kpi-menus-change',    totalMenus,    prev.prevMenus,    false);
+      setKpiChange('kpi-comandas-change', totalComandas, prev.prevComandas, false);
+      const prevRatio = prev.prevComandas > 0 ? prev.prevMenus / prev.prevComandas : 0;
+      setKpiChange('kpi-ratio-change',    ratio,         prevRatio,         true);
+    }
+  } else {
+    ['kpi-menus-change','kpi-comandas-change','kpi-ratio-change'].forEach(id => {
+      const el = $(id); if (el) el.textContent = '';
+    });
+  }
 
   // Proyección
   const proj = calcProjection();
   if (proj) {
     $('kpi-proyeccion').textContent = '~' + fmt(proj.projected);
-    const MESES_NOMBRES = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    if (proj.isPartialMonth) {
-      $('kpi-proyeccion-sub').textContent =
-        `${fmt(proj.totalSoFar)} hasta día ${proj.daysElapsed} · base ${proj.totalDays} días`;
-    } else {
-      const label = `${MESES_NOMBRES[proj.targetMonth]} ${proj.targetYear}`;
-      $('kpi-proyeccion-sub').textContent = `Mes completo (${label})`;
-    }
+    $('kpi-proyeccion-sub').textContent = proj.isPartialMonth
+      ? `${fmt(proj.totalSoFar)} hasta día ${proj.daysElapsed} · base ${proj.totalDays} días`
+      : `Mes completo (${MESES_SHORT[proj.targetMonth]} ${proj.targetYear})`;
   } else {
-    $('kpi-proyeccion').textContent = filterMode === 'rango' ? 'N/A' : '—';
+    $('kpi-proyeccion').textContent     = filterMode === 'rango' ? 'N/A' : '—';
     $('kpi-proyeccion-sub').textContent = filterMode === 'rango' ? 'No aplica en modo rango' : '';
   }
+}
+
+function renderSummary() {
+  const card = $('summary-card');
+  const totalMenus = filteredDatos.reduce((s, r) => s + r.cantidad, 0);
+  if (totalMenus === 0) { card.style.display = 'none'; return; }
+
+  const parts = [];
+
+  // Descripción del período actual
+  const mesVal = filterMode === 'mes' ? $('f-mes').value : '';
+  if (mesVal) {
+    const proj = calcProjection();
+    if (proj && proj.isPartialMonth) {
+      parts.push(`<strong>${mesVal}</strong> lleva <strong>${fmt(totalMenus)} menus</strong> en ${proj.daysElapsed} días cargados. Proyección al cierre del mes: <strong>~${fmt(proj.projected)} menus</strong>.`);
+    } else {
+      parts.push(`<strong>${mesVal}</strong> cerró con <strong>${fmt(totalMenus)} menus</strong>.`);
+    }
+
+    // Comparación con mes anterior
+    const p = parseMonthFromStr(mesVal);
+    if (p) {
+      const prev = getPrevMonthTotals(p.year, p.month);
+      if (prev.prevMenus > 0) {
+        const pct = ((totalMenus - prev.prevMenus) / prev.prevMenus * 100).toFixed(1);
+        const arrow = pct >= 0 ? '↑' : '↓';
+        const color = pct >= 0 ? '#2e7d32' : '#c62828';
+        parts.push(`<span style="color:${color};font-weight:800">${arrow} ${Math.abs(pct)}%</span> comparado con ${MESES_SHORT[prev.pm]} ${prev.py} (${fmt(prev.prevMenus)} menus).`);
+      }
+    }
+  } else if (filterMode === 'rango') {
+    const desde = $('f-desde').value, hasta = $('f-hasta').value;
+    const rango = desde && hasta ? ` entre ${desde.split('-').reverse().join('/')} y ${hasta.split('-').reverse().join('/')}` : '';
+    parts.push(`El rango seleccionado suma <strong>${fmt(totalMenus)} menus</strong>${rango}.`);
+  } else {
+    parts.push(`El total general es de <strong>${fmt(totalMenus)} menus</strong>.`);
+  }
+
+  // Mejor mes histórico
+  const grouped = groupBy(rawDatos, 'mes', 'cantidad');
+  const entries = Object.entries(grouped).filter(([k]) => k && k !== 'Sin dato');
+  if (entries.length > 1) {
+    const best = entries.reduce((mx, e) => e[1] > mx[1] ? e : mx, entries[0]);
+    if (!mesVal || best[0] !== mesVal) {
+      parts.push(`El mejor mes fue <strong>${best[0]}</strong> con <strong>${fmt(best[1])} menus</strong>.`);
+    }
+  }
+
+  card.innerHTML = parts.join(' ');
+  card.style.display = 'block';
 }
 
 function renderRankingFamilias() {
@@ -1049,27 +1212,12 @@ function renderRankingFamilias() {
   const labels  = Object.keys(grouped).sort((a, b) => grouped[b] - grouped[a]);
   makeChart('chart-familia', {
     type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Cantidad',
-        data: labels.map(l => grouped[l]),
-        backgroundColor: '#4A2D6F',
-        hoverBackgroundColor: '#7B5EA7',
-        borderRadius: 4,
-        borderSkipped: false,
-      }]
-    },
+    data: { labels, datasets: [{ label: 'Cantidad', data: labels.map(l => grouped[l]), backgroundColor: '#4A2D6F', hoverBackgroundColor: '#7B5EA7', borderRadius: 4, borderSkipped: false }] },
     options: {
       indexAxis: 'y',
       plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: '#E8E0D4' }, beginAtZero: true },
-        y: { grid: { display: false } }
-      },
-      onClick: (evt, elements) => {
-        if (elements.length > 0) applyChartFilter('familia', labels[elements[0].index]);
-      }
+      scales: { x: { grid: { color: '#E8E0D4' }, beginAtZero: true }, y: { grid: { display: false } } },
+      onClick: (evt, els) => { if (els.length) applyChartFilter('familia', labels[els[0].index]); }
     }
   });
 }
@@ -1079,26 +1227,11 @@ function renderMenusSucursal() {
   const labels  = Object.keys(grouped).sort((a, b) => grouped[b] - grouped[a]);
   makeChart('chart-menus-suc', {
     type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Menus',
-        data: labels.map(l => grouped[l]),
-        backgroundColor: '#7B5EA7',
-        hoverBackgroundColor: '#4A2D6F',
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
+    data: { labels, datasets: [{ label: 'Menus', data: labels.map(l => grouped[l]), backgroundColor: '#7B5EA7', hoverBackgroundColor: '#4A2D6F', borderRadius: 6, borderSkipped: false }] },
     options: {
       plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false } },
-        y: { grid: { color: '#E8E0D4' }, beginAtZero: true }
-      },
-      onClick: (evt, elements) => {
-        if (elements.length > 0) applyChartFilter('sucursal', labels[elements[0].index]);
-      }
+      scales: { x: { grid: { display: false } }, y: { grid: { color: '#E8E0D4' }, beginAtZero: true } },
+      onClick: (evt, els) => { if (els.length) applyChartFilter('sucursal', labels[els[0].index]); }
     }
   });
 }
@@ -1108,26 +1241,11 @@ function renderDocsSucursal() {
   const labels  = Object.keys(grouped).sort((a, b) => grouped[b] - grouped[a]);
   makeChart('chart-docs-suc', {
     type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Documentos',
-        data: labels.map(l => grouped[l]),
-        backgroundColor: '#9B7EC8',
-        hoverBackgroundColor: '#4A2D6F',
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
+    data: { labels, datasets: [{ label: 'Documentos', data: labels.map(l => grouped[l]), backgroundColor: '#9B7EC8', hoverBackgroundColor: '#4A2D6F', borderRadius: 6, borderSkipped: false }] },
     options: {
       plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false } },
-        y: { grid: { color: '#E8E0D4' }, beginAtZero: true }
-      },
-      onClick: (evt, elements) => {
-        if (elements.length > 0) applyChartFilter('sucursal', labels[elements[0].index]);
-      }
+      scales: { x: { grid: { display: false } }, y: { grid: { color: '#E8E0D4' }, beginAtZero: true } },
+      onClick: (evt, els) => { if (els.length) applyChartFilter('sucursal', labels[els[0].index]); }
     }
   });
 }
@@ -1138,7 +1256,6 @@ function renderZona() {
   const labels  = Object.keys(grouped).sort((a, b) => grouped[b] - grouped[a]);
 
   $('zona-total').textContent = fmt(total);
-
   $('zona-grid').innerHTML = labels.map(z => `
     <div class="zona-item">
       <div class="zona-item-label">${z}</div>
@@ -1147,34 +1264,25 @@ function renderZona() {
   `).join('');
 
   makeChart('chart-zona', {
-    type: 'pie',
+    type: 'doughnut',
     data: {
       labels,
-      datasets: [{
-        data: labels.map(l => grouped[l]),
-        backgroundColor: PURPLE_PALETTE.slice(0, labels.length),
-        borderWidth: 2,
-        borderColor: '#fff',
-      }]
+      datasets: [{ data: labels.map(l => grouped[l]), backgroundColor: PURPLE_PALETTE.slice(0, labels.length), borderWidth: 2, borderColor: '#fff' }]
     },
     options: {
+      cutout: '58%',
       plugins: {
-        legend: {
-          position: 'right',
-          labels: { padding: 14, boxWidth: 12, usePointStyle: true, font: { family: 'Nunito', weight: '700' } }
-        },
+        legend: { position: 'right', labels: { padding: 14, boxWidth: 12, usePointStyle: true, font: { family: 'Nunito', weight: '700' } } },
         tooltip: {
           callbacks: {
-            label: function(context) {
-              const value = context.parsed;
-              const pct   = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-              return `  ${context.label}: ${fmt(value)} comandas (${pct}%)`;
+            label: ctx => {
+              const pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : '0.0';
+              return `  ${ctx.label}: ${fmt(ctx.parsed)} (${pct}%)`;
             }
           },
           titleFont: { family: 'Nunito', weight: '800', size: 13 },
           bodyFont:  { family: 'Nunito', weight: '600', size: 12 },
-          padding: 12,
-          cornerRadius: 8,
+          padding: 12, cornerRadius: 8,
         }
       }
     }
@@ -1189,24 +1297,78 @@ function renderMes() {
     type: 'bar',
     data: {
       labels,
-      datasets: [{
-        data: labels.map(l => grouped[l]),
-        backgroundColor: labels.map((_, i) =>
-          `rgba(74,45,111,${0.35 + (i / Math.max(n - 1, 1)) * 0.65})`
-        ),
-        hoverBackgroundColor: '#4A2D6F',
-        borderRadius: 5,
-        borderSkipped: false,
-      }]
+      datasets: [{ data: labels.map(l => grouped[l]), backgroundColor: labels.map((_, i) => `rgba(74,45,111,${0.35 + (i / Math.max(n-1,1)) * 0.65})`), hoverBackgroundColor: '#4A2D6F', borderRadius: 5, borderSkipped: false }]
     },
     options: {
       plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false } },
-        y: { grid: { color: '#E8E0D4' }, beginAtZero: true }
+      scales: { x: { grid: { display: false } }, y: { grid: { color: '#E8E0D4' }, beginAtZero: true } },
+      onClick: (evt, els) => { if (els.length) applyChartFilter('mes', labels[els[0].index]); }
+    }
+  });
+}
+
+function renderDiario() {
+  // Determinar mes objetivo
+  let targetYear, targetMonth;
+
+  if (filterMode === 'mes' && $('f-mes').value) {
+    const p = parseMonthFromStr($('f-mes').value);
+    if (p) { targetYear = p.year; targetMonth = p.month; }
+  }
+
+  // Sin mes filtrado: usar el más reciente en los datos filtrados
+  if (!targetYear) {
+    const orders = filteredDatos.map(r => parseMesOrder(r.mes)).filter(Boolean);
+    if (!orders.length) { if (charts['chart-daily']) charts['chart-daily'].destroy(); return; }
+    const maxOrder = orders.reduce((mx, o) => o > mx ? o : mx, orders[0]);
+    targetYear  = Math.floor(maxOrder / 100);
+    targetMonth = maxOrder % 100;
+  }
+
+  // Agrupar por día
+  const dailyMap = {};
+  filteredDatos.forEach(r => {
+    const d = parseDate(r.fecha);
+    if (d && d.getFullYear() === targetYear && d.getMonth() + 1 === targetMonth) {
+      const day = d.getDate();
+      dailyMap[day] = (dailyMap[day] || 0) + r.cantidad;
+    }
+  });
+
+  const days = Object.keys(dailyMap).map(Number);
+  if (!days.length) { if (charts['chart-daily']) charts['chart-daily'].destroy(); return; }
+
+  const lastDay = days.reduce((mx, d) => d > mx ? d : mx, days[0]);
+  const labels = [], data = [];
+  for (let d = 1; d <= lastDay; d++) { labels.push(d); data.push(dailyMap[d] || 0); }
+
+  $('title-daily').textContent = `Evolución Diaria — ${MESES_NOMBRES[targetMonth]} ${targetYear}`;
+
+  makeChart('chart-daily', {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Menus',
+        data,
+        borderColor: '#7B5EA7',
+        backgroundColor: 'rgba(123,94,167,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 3,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#4A2D6F',
+        tension: 0.3,
+        fill: true,
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { title: ctx => `Día ${ctx[0].label}` }, padding: 10, cornerRadius: 8 }
       },
-      onClick: (evt, elements) => {
-        if (elements.length > 0) applyChartFilter('mes', labels[elements[0].index]);
+      scales: {
+        x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } },
+        y: { grid: { color: '#E8E0D4' }, beginAtZero: true }
       }
     }
   });
@@ -1214,11 +1376,7 @@ function renderMes() {
 
 function renderRankingProductos() {
   const el = $('ranking-table');
-
-  if (filteredDatos.length === 0) {
-    el.innerHTML = '<div class="no-data">Sin datos para mostrar</div>';
-    return;
-  }
+  if (filteredDatos.length === 0) { el.innerHTML = '<div class="no-data">Sin datos para mostrar</div>'; return; }
 
   const grouped = groupBy(filteredDatos, 'producto', 'cantidad');
   const entries = Object.entries(grouped).filter(([k]) => k !== 'Sin dato' && k !== '');
@@ -1232,21 +1390,20 @@ function renderRankingProductos() {
   const sorted = entries.sort((a, b) => b[1] - a[1]).slice(0, 12);
   const max = sorted[0][1];
 
-  el.innerHTML = sorted.map(([prod, qty], i) => `
-    <div class="rank-item">
-      <span class="rank-num">${String(i + 1).padStart(2, '0')}</span>
-      <div>
-        <div class="rank-name">${prod}</div>
-        <div class="rank-bar-bg">
-          <div class="rank-bar-fill" style="width:${Math.round(qty / max * 100)}%"></div>
+  el.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 32px">` +
+    sorted.map(([prod, qty], i) => `
+      <div class="rank-item">
+        <span class="rank-num">${String(i+1).padStart(2,'0')}</span>
+        <div>
+          <div class="rank-name">${prod}</div>
+          <div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${Math.round(qty/max*100)}%"></div></div>
         </div>
+        <span class="rank-val">${fmt(qty)}</span>
       </div>
-      <span class="rank-val">${fmt(qty)}</span>
-    </div>
-  `).join('');
+    `).join('') + `</div>`;
 }
 
-// ── Fetch & boot ─────────────────────────────────────────────────────────────
+// ── Fetch & boot ──────────────────────────────────────────────────────────────
 async function loadData() {
   try {
     const res = await fetch('/data');
