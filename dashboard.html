@@ -616,7 +616,7 @@
       <div class="kpi-value" id="kpi-comandas">—</div>
     </div>
     <div class="kpi forecast">
-      <div class="kpi-label">Proyección Mensual</div>
+      <div class="kpi-label">Proyección Menus</div>
       <div class="kpi-value" id="kpi-proyeccion">—</div>
       <div class="kpi-sub" id="kpi-proyeccion-sub"></div>
     </div>
@@ -957,18 +957,23 @@ function calcProjection() {
   // Si estamos en modo rango, no tiene sentido proyectar → mostrar N/A
   if (filterMode === 'rango') return null;
 
-  const suc = $('f-sucursal').value;
+  const suc    = $('f-sucursal').value;
+  const turno  = $('f-turno').value;
+  const familia= $('f-familia').value;
 
-  // Sumar documentos del mes objetivo (sobre rawDatos2, con filtro de sucursal)
-  const monthRows = rawDatos2.filter(r => {
+  // Sumar menus del mes objetivo (sobre rawDatos, con filtros aplicados)
+  const monthRows = rawDatos.filter(r => {
     const order = parseMesOrder(r.mes);
     if (!order) return false;
     const ry = Math.floor(order / 100);
     const rm = order % 100;
-    return ry === targetYear && rm === targetMonth && (!suc || r.sucursal === suc);
+    return ry === targetYear && rm === targetMonth &&
+      (!suc    || r.sucursal === suc)   &&
+      (!turno  || r.turno    === turno) &&
+      (!familia|| r.familia  === familia);
   });
 
-  const totalSoFar = monthRows.reduce((s, r) => s + r.documentos, 0);
+  const totalSoFar = monthRows.reduce((s, r) => s + r.cantidad, 0);
   if (totalSoFar === 0) return null;
 
   const now = new Date();
