@@ -976,15 +976,25 @@ function calcProjection() {
   const totalSoFar = monthRows.reduce((s, r) => s + r.cantidad, 0);
   if (totalSoFar === 0) return null;
 
-  const now = new Date();
-  const isCurrentMonth = now.getFullYear() === targetYear && (now.getMonth() + 1) === targetMonth;
-  const totalDays   = new Date(targetYear, targetMonth, 0).getDate();
-  const daysElapsed = isCurrentMonth ? now.getDate() : totalDays;
+  const totalDays = new Date(targetYear, targetMonth, 0).getDate();
 
+  // Buscar el último día con datos cargados para ese mes
+  const diasConDatos = monthRows
+    .map(r => parseDate(r.fecha))
+    .filter(Boolean)
+    .filter(d => d.getFullYear() === targetYear && d.getMonth() + 1 === targetMonth)
+    .map(d => d.getDate());
+
+  const lastDayWithData = diasConDatos.length > 0
+    ? diasConDatos.reduce((max, d) => d > max ? d : max, diasConDatos[0])
+    : totalDays;
+
+  const daysElapsed = lastDayWithData;
   if (daysElapsed === 0) return null;
 
+  const isPartialMonth = daysElapsed < totalDays;
   const projected = Math.round((totalSoFar / daysElapsed) * totalDays);
-  return { projected, totalSoFar, daysElapsed, totalDays, isCurrentMonth, targetYear, targetMonth };
+  return { projected, totalSoFar, daysElapsed, totalDays, isPartialMonth, targetYear, targetMonth };
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -1021,11 +1031,11 @@ function renderKPIs() {
   if (proj) {
     $('kpi-proyeccion').textContent = '~' + fmt(proj.projected);
     const MESES_NOMBRES = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    const label = `${MESES_NOMBRES[proj.targetMonth]} ${proj.targetYear}`;
-    if (proj.isCurrentMonth) {
+    if (proj.isPartialMonth) {
       $('kpi-proyeccion-sub').textContent =
-        `${fmt(proj.totalSoFar)} en ${proj.daysElapsed} días · ${proj.totalDays} días totales`;
+        `${fmt(proj.totalSoFar)} hasta día ${proj.daysElapsed} · base ${proj.totalDays} días`;
     } else {
+      const label = `${MESES_NOMBRES[proj.targetMonth]} ${proj.targetYear}`;
       $('kpi-proyeccion-sub').textContent = `Mes completo (${label})`;
     }
   } else {
