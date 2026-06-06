@@ -30,7 +30,6 @@
     min-height: 100vh;
   }
 
-  /* ── Sticky top wrapper ── */
   .sticky-top {
     position: sticky;
     top: 0;
@@ -143,6 +142,50 @@
 
   select:focus, select:hover { border-color: var(--purple2); }
 
+  input[type="date"] {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="date"]:focus, input[type="date"]:hover { border-color: var(--purple2); }
+
+  /* ── Mode toggle ── */
+  .mode-toggle {
+    display: flex;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .mode-btn {
+    padding: 6px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+
+  .mode-btn.active {
+    background: var(--purple);
+    color: #fff;
+  }
+
   .btn {
     padding: 7px 18px;
     border-radius: 6px;
@@ -173,7 +216,7 @@
   /* ── KPI row ── */
   .kpi-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
   }
 
@@ -200,6 +243,11 @@
     color: var(--text);
   }
 
+  .kpi.forecast {
+    background: linear-gradient(135deg, #1e3a2f 0%, #2e6e4e 100%);
+    color: #fff;
+  }
+
   .kpi-label {
     font-family: 'Nunito', sans-serif;
     font-size: 0.72rem;
@@ -211,6 +259,7 @@
   }
 
   .kpi.light .kpi-label { color: var(--purple2); opacity: 1; }
+  .kpi.forecast .kpi-label { opacity: 0.75; }
 
   .kpi-value {
     font-family: 'Nunito', sans-serif;
@@ -220,6 +269,16 @@
   }
 
   .kpi.light .kpi-value { color: var(--purple); }
+
+  .kpi-sub {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    opacity: 0.55;
+    margin-top: 8px;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
 
   /* ── Cards ── */
   .card {
@@ -468,6 +527,9 @@
   }
 
   /* ── Responsive ── */
+  @media (max-width: 1100px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  }
   @media (max-width: 900px) {
     .kpi-row, .grid-2, .grid-3, .zona-section { grid-template-columns: 1fr; }
     header, .filters, main { padding-left: 20px; padding-right: 20px; }
@@ -497,10 +559,29 @@
 </header>
 
 <div class="filters">
+  <!-- Modo período -->
   <div class="filter-group">
+    <label>Período</label>
+    <div class="mode-toggle">
+      <button id="btn-mode-mes"   class="mode-btn active" onclick="setFilterMode('mes')">Mes</button>
+      <button id="btn-mode-rango" class="mode-btn"        onclick="setFilterMode('rango')">Rango</button>
+    </div>
+  </div>
+
+  <!-- Filtro por mes (modo Mes) -->
+  <div class="filter-group" id="group-mes">
     <label>Mes/Año</label>
     <select id="f-mes"><option value="">Todos</option></select>
   </div>
+
+  <!-- Filtro por rango de fechas (modo Rango) -->
+  <div class="filter-group" id="group-rango" style="display:none">
+    <label>Desde</label>
+    <input type="date" id="f-desde">
+    <label>Hasta</label>
+    <input type="date" id="f-hasta">
+  </div>
+
   <div class="filter-group">
     <label>Sucursal</label>
     <select id="f-sucursal"><option value="">Todas</option></select>
@@ -533,6 +614,11 @@
     <div class="kpi">
       <div class="kpi-label">Total Comandas</div>
       <div class="kpi-value" id="kpi-comandas">—</div>
+    </div>
+    <div class="kpi forecast">
+      <div class="kpi-label">Proyección Mensual</div>
+      <div class="kpi-value" id="kpi-proyeccion">—</div>
+      <div class="kpi-sub" id="kpi-proyeccion-sub"></div>
     </div>
   </div>
 
@@ -631,13 +717,10 @@ const MESES_ES = {
 
 function parseMesOrder(mesStr) {
   if (!mesStr) return 0;
-  // MM/YYYY
   const m1 = mesStr.match(/^(\d{1,2})\/(\d{4})$/);
   if (m1) return parseInt(m1[2]) * 100 + parseInt(m1[1]);
-  // YYYY-MM
   const m2 = mesStr.match(/^(\d{4})-(\d{2})$/);
   if (m2) return parseInt(m2[1]) * 100 + parseInt(m2[2]);
-  // "Enero 2024" / "ene-24"
   const parts = mesStr.toLowerCase().split(/[\s\-\/]+/);
   let month = 0, year = 0;
   parts.forEach(p => {
@@ -647,6 +730,26 @@ function parseMesOrder(mesStr) {
   });
   if (month && year) return year * 100 + month;
   return 0;
+}
+
+// Devuelve { year, month } o null
+function parseMonthFromStr(mesStr) {
+  const order = parseMesOrder(mesStr);
+  if (!order) return null;
+  return { year: Math.floor(order / 100), month: order % 100 };
+}
+
+// Parse fecha DD/MM/YYYY o YYYY-MM-DD → Date
+function parseDate(str) {
+  if (!str) return null;
+  const m1 = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m1) return new Date(parseInt(m1[3]), parseInt(m1[2]) - 1, parseInt(m1[1]));
+  const m2 = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m2) return new Date(parseInt(m2[1]), parseInt(m2[2]) - 1, parseInt(m2[3]));
+  // DD-MM-YYYY
+  const m3 = str.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+  if (m3) return new Date(parseInt(m3[3]), parseInt(m3[2]) - 1, parseInt(m3[1]));
+  return null;
 }
 
 // ── Parse ────────────────────────────────────────────────────────────────────
@@ -664,7 +767,6 @@ function normalizeDatos(rows) {
   const parsed = parseRows(rows);
   if (parsed.length === 0) return [];
 
-  // Detectar columna de producto automáticamente
   const firstRow = parsed[0];
   const allKeys = Object.keys(firstRow);
   const productoKey = allKeys.find(k =>
@@ -699,11 +801,21 @@ function normalizeDatos2(rows) {
 // ── Estado ───────────────────────────────────────────────────────────────────
 let rawDatos = [], rawDatos2 = [];
 let filteredDatos = [], filteredDatos2 = [];
+let filterMode = 'mes'; // 'mes' | 'rango'
+
+// ── Modo de período ──────────────────────────────────────────────────────────
+function setFilterMode(mode) {
+  filterMode = mode;
+  $('btn-mode-mes').classList.toggle('active', mode === 'mes');
+  $('btn-mode-rango').classList.toggle('active', mode === 'rango');
+  $('group-mes').style.display   = mode === 'mes'   ? 'flex' : 'none';
+  $('group-rango').style.display = mode === 'rango' ? 'flex' : 'none';
+}
 
 // ── Filtros ──────────────────────────────────────────────────────────────────
 function populateFilters() {
   const meses = [...new Set(rawDatos.map(r => r.mes))].filter(Boolean)
-    .sort((a, b) => parseMesOrder(b) - parseMesOrder(a)); // más reciente primero
+    .sort((a, b) => parseMesOrder(b) - parseMesOrder(a));
   const sucursales = [...new Set(rawDatos.map(r => r.sucursal))].filter(Boolean).sort();
   const turnos     = [...new Set(rawDatos.map(r => r.turno))].filter(Boolean).sort();
   const familias   = [...new Set(rawDatos.map(r => r.familia))].filter(Boolean).sort();
@@ -711,6 +823,15 @@ function populateFilters() {
   populate('f-sucursal', sucursales);
   populate('f-turno', turnos);
   populate('f-familia', familias);
+
+  // Precargar rango con min/max fechas del dataset
+  const fechas = rawDatos.map(r => parseDate(r.fecha)).filter(Boolean).map(d => d.getTime());
+  if (fechas.length) {
+    const minD = new Date(Math.min(...fechas));
+    const maxD = new Date(Math.max(...fechas));
+    $('f-desde').value = minD.toISOString().split('T')[0];
+    $('f-hasta').value = maxD.toISOString().split('T')[0];
+  }
 }
 
 function populate(id, values) {
@@ -730,28 +851,51 @@ function applyFilters() {
   const suc    = $('f-sucursal').value;
   const turno  = $('f-turno').value;
   const familia= $('f-familia').value;
+  const desde  = $('f-desde').value ? new Date($('f-desde').value + 'T00:00:00') : null;
+  const hasta  = $('f-hasta').value ? new Date($('f-hasta').value + 'T23:59:59') : null;
 
-  filteredDatos = rawDatos.filter(r =>
-    (!mes    || r.mes      === mes)    &&
-    (!suc    || r.sucursal === suc)    &&
-    (!turno  || r.turno    === turno)  &&
-    (!familia|| r.familia  === familia)
-  );
-  filteredDatos2 = rawDatos2.filter(r =>
-    (!mes || r.mes === mes) && (!suc || r.sucursal === suc)
-  );
+  filteredDatos = rawDatos.filter(r => {
+    if (filterMode === 'mes') {
+      if (mes && r.mes !== mes) return false;
+    } else {
+      const fecha = parseDate(r.fecha);
+      if (desde && fecha && fecha < desde) return false;
+      if (hasta && fecha && fecha > hasta) return false;
+    }
+    if (suc    && r.sucursal !== suc)    return false;
+    if (turno  && r.turno    !== turno)  return false;
+    if (familia && r.familia !== familia) return false;
+    return true;
+  });
+
+  filteredDatos2 = rawDatos2.filter(r => {
+    if (filterMode === 'mes') {
+      if (mes && r.mes !== mes) return false;
+    } else {
+      const fecha = parseDate(r.fecha);
+      if (desde && fecha && fecha < desde) return false;
+      if (hasta && fecha && fecha > hasta) return false;
+    }
+    if (suc && r.sucursal !== suc) return false;
+    return true;
+  });
+
   render();
 }
 
 function resetFilters() {
   ['f-mes','f-sucursal','f-turno','f-familia'].forEach(id => $(id).value = '');
+  $('f-desde').value = '';
+  $('f-hasta').value = '';
+  setFilterMode('mes');
   filteredDatos  = [...rawDatos];
   filteredDatos2 = [...rawDatos2];
   render();
 }
 
-// Aplicar filtro desde un click en gráfico
+// Aplicar filtro desde click en gráfico
 function applyChartFilter(type, value) {
+  if (filterMode !== 'mes') setFilterMode('mes');
   if (type === 'familia') {
     $('f-familia').value = value;
     showChip('chip-familia', value);
@@ -793,6 +937,51 @@ function hideChip(id) {
   if (el) el.style.display = 'none';
 }
 
+// ── Proyección mensual ────────────────────────────────────────────────────────
+function calcProjection() {
+  // Determinar el mes objetivo
+  let targetYear, targetMonth;
+
+  if (filterMode === 'mes' && $('f-mes').value) {
+    const parsed = parseMonthFromStr($('f-mes').value);
+    if (parsed) { targetYear = parsed.year; targetMonth = parsed.month; }
+  }
+
+  // Si no hay mes seleccionado, usar el mes calendar actual
+  if (!targetYear) {
+    const now = new Date();
+    targetYear  = now.getFullYear();
+    targetMonth = now.getMonth() + 1;
+  }
+
+  // Si estamos en modo rango, no tiene sentido proyectar → mostrar N/A
+  if (filterMode === 'rango') return null;
+
+  const suc = $('f-sucursal').value;
+
+  // Sumar documentos del mes objetivo (sobre rawDatos2, con filtro de sucursal)
+  const monthRows = rawDatos2.filter(r => {
+    const order = parseMesOrder(r.mes);
+    if (!order) return false;
+    const ry = Math.floor(order / 100);
+    const rm = order % 100;
+    return ry === targetYear && rm === targetMonth && (!suc || r.sucursal === suc);
+  });
+
+  const totalSoFar = monthRows.reduce((s, r) => s + r.documentos, 0);
+  if (totalSoFar === 0) return null;
+
+  const now = new Date();
+  const isCurrentMonth = now.getFullYear() === targetYear && (now.getMonth() + 1) === targetMonth;
+  const totalDays   = new Date(targetYear, targetMonth, 0).getDate();
+  const daysElapsed = isCurrentMonth ? now.getDate() : totalDays;
+
+  if (daysElapsed === 0) return null;
+
+  const projected = Math.round((totalSoFar / daysElapsed) * totalDays);
+  return { projected, totalSoFar, daysElapsed, totalDays, isCurrentMonth, targetYear, targetMonth };
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function groupBy(arr, key, valKey) {
   const map = {};
@@ -821,6 +1010,23 @@ function renderKPIs() {
   $('kpi-menus').textContent    = fmt(totalMenus);
   $('kpi-comandas').textContent = fmt(totalComandas);
   $('kpi-ratio').textContent    = fmt2(ratio);
+
+  // Proyección
+  const proj = calcProjection();
+  if (proj) {
+    $('kpi-proyeccion').textContent = '~' + fmt(proj.projected);
+    const MESES_NOMBRES = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const label = `${MESES_NOMBRES[proj.targetMonth]} ${proj.targetYear}`;
+    if (proj.isCurrentMonth) {
+      $('kpi-proyeccion-sub').textContent =
+        `${fmt(proj.totalSoFar)} en ${proj.daysElapsed} días · ${proj.totalDays} días totales`;
+    } else {
+      $('kpi-proyeccion-sub').textContent = `Mes completo (${label})`;
+    }
+  } else {
+    $('kpi-proyeccion').textContent = filterMode === 'rango' ? 'N/A' : '—';
+    $('kpi-proyeccion-sub').textContent = filterMode === 'rango' ? 'No aplica en modo rango' : '';
+  }
 }
 
 function renderRankingFamilias() {
@@ -847,9 +1053,7 @@ function renderRankingFamilias() {
         y: { grid: { display: false } }
       },
       onClick: (evt, elements) => {
-        if (elements.length > 0) {
-          applyChartFilter('familia', labels[elements[0].index]);
-        }
+        if (elements.length > 0) applyChartFilter('familia', labels[elements[0].index]);
       }
     }
   });
@@ -878,9 +1082,7 @@ function renderMenusSucursal() {
         y: { grid: { color: '#E8E0D4' }, beginAtZero: true }
       },
       onClick: (evt, elements) => {
-        if (elements.length > 0) {
-          applyChartFilter('sucursal', labels[elements[0].index]);
-        }
+        if (elements.length > 0) applyChartFilter('sucursal', labels[elements[0].index]);
       }
     }
   });
@@ -909,9 +1111,7 @@ function renderDocsSucursal() {
         y: { grid: { color: '#E8E0D4' }, beginAtZero: true }
       },
       onClick: (evt, elements) => {
-        if (elements.length > 0) {
-          applyChartFilter('sucursal', labels[elements[0].index]);
-        }
+        if (elements.length > 0) applyChartFilter('sucursal', labels[elements[0].index]);
       }
     }
   });
@@ -944,7 +1144,23 @@ function renderZona() {
     },
     options: {
       plugins: {
-        legend: { position: 'right', labels: { padding: 14, boxWidth: 12, usePointStyle: true, font: { family: 'Nunito', weight: '700' } } }
+        legend: {
+          position: 'right',
+          labels: { padding: 14, boxWidth: 12, usePointStyle: true, font: { family: 'Nunito', weight: '700' } }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const value = context.parsed;
+              const pct   = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+              return `  ${context.label}: ${fmt(value)} comandas (${pct}%)`;
+            }
+          },
+          titleFont: { family: 'Nunito', weight: '800', size: 13 },
+          bodyFont:  { family: 'Nunito', weight: '600', size: 12 },
+          padding: 12,
+          cornerRadius: 8,
+        }
       }
     }
   });
@@ -975,9 +1191,7 @@ function renderMes() {
         y: { grid: { color: '#E8E0D4' }, beginAtZero: true }
       },
       onClick: (evt, elements) => {
-        if (elements.length > 0) {
-          applyChartFilter('mes', labels[elements[0].index]);
-        }
+        if (elements.length > 0) applyChartFilter('mes', labels[elements[0].index]);
       }
     }
   });
@@ -995,7 +1209,6 @@ function renderRankingProductos() {
   const entries = Object.entries(grouped).filter(([k]) => k !== 'Sin dato' && k !== '');
 
   if (entries.length === 0) {
-    // Mostrar igual con "Sin dato" para ayudar al debug
     const total = filteredDatos.reduce((s, r) => s + r.cantidad, 0);
     el.innerHTML = `<div class="no-data">La columna de productos no fue encontrada en la planilla.<br>Total cantidad: ${fmt(total)}</div>`;
     return;
