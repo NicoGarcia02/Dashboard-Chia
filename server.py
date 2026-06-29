@@ -116,7 +116,6 @@ def fetch_range(range_str, spreadsheet_id):
     url = (
         f"https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet_id}"
         f"/values/{urllib.parse.quote(range_str, safe='!:')}"
-        f"?valueRenderOption=UNFORMATTED_VALUE"
     )
     req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
     try:

@@ -1669,18 +1669,16 @@ function parseMonto(val) {
 
 function normalizeRentabilidad(rows) {
   if (!rows || rows.length < 2) return [];
-  const headers = rows[0].map(h => String(h).trim().toLowerCase().replace(/^﻿/, ''));
-  return rows.slice(1).map(row => {
-    const obj = {};
-    headers.forEach((h, i) => obj[h] = row[i] !== undefined ? String(row[i]).trim() : '');
-    return {
-      mes:      obj['mes'] || obj['mes/año'] || '',
-      fecha:    obj['fecha'] || '',
-      sucursal: obj['sucursal'] || '',
-      monto:    parseMonto(obj['monto'] || 0),
-      medio:    obj['medio de pago'] || obj['medio'] || '',
-    };
-  }).filter(r => r.fecha && r.monto > 0);
+  // Columnas por posición: J=mes, K=fecha, L=sucursal, M=monto, N=medio de pago
+  console.log('[finanzas] headers reales:', rows[0]);
+  console.log('[finanzas] primera fila de datos:', rows[1]);
+  return rows.slice(1).map(row => ({
+    mes:      String(row[0] ?? '').trim(),
+    fecha:    String(row[1] ?? '').trim(),
+    sucursal: String(row[2] ?? '').trim(),
+    monto:    parseMonto(row[3]),
+    medio:    String(row[4] ?? '').trim(),
+  })).filter(r => r.fecha && r.monto > 0);
 }
 
 // ── Finanzas — filtros ────────────────────────────────────────────────────────
