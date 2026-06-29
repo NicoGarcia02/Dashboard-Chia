@@ -1664,6 +1664,11 @@ function parseMonto(val) {
   const s = String(val).replace(/[$\s]/g, '');
   if (s.includes('.') && s.includes(',')) return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
   if (s.includes(',')) return parseFloat(s.replace(',', '.')) || 0;
+  if (s.includes('.')) {
+    // Sin coma: si el último grupo después del punto tiene 3 dígitos, es separador de miles (formato AR)
+    const parts = s.split('.');
+    if (parts[parts.length - 1].length === 3) return parseFloat(parts.join('')) || 0;
+  }
   return parseFloat(s) || 0;
 }
 
