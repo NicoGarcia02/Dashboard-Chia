@@ -1687,7 +1687,7 @@ function normalizeRentabilidad(rows) {
   console.log('[finanzas] muestra filas sin monto:', all.filter(r => r.fecha && !(r.monto > 0)).slice(0, 5));
   console.log('[finanzas] muestra filas sin fecha:', all.filter(r => !r.fecha).slice(0, 3));
 
-  return all.filter(r => r.fecha && r.monto > 0);
+  return all.filter(r => r.monto > 0 && (r.mes || r.sucursal || r.medio));
 }
 
 // ── Finanzas — filtros ────────────────────────────────────────────────────────
