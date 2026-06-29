@@ -968,6 +968,17 @@
     <canvas id="chart-medios-suc" style="max-height:320px"></canvas>
   </div>
 
+  <!-- Evolución individual (sin filtro) -->
+  <div class="card">
+    <div class="card-title">Evolución de un Medio de Pago</div>
+    <div class="chart-hint">Datos completos, sin aplicar filtros de arriba</div>
+    <div style="margin-bottom:14px">
+      <label style="font-family:'Nunito',sans-serif;font-weight:700;font-size:.85rem;color:#6B4F8A;margin-right:8px">Medio:</label>
+      <select id="sel-medio-detalle" onchange="renderMedioDetalle()" style="font-family:'Nunito',sans-serif;font-size:.9rem;padding:4px 10px;border-radius:8px;border:1.5px solid #C4A8D4;color:#2D1A45;background:#FAF7F2"></select>
+    </div>
+    <canvas id="chart-medio-detalle"></canvas>
+  </div>
+
 </main>
 
 <script>
@@ -984,6 +995,12 @@ const PURPLE_PALETTE = [
   '#4A2D6F','#7B5EA7','#C4A8D4','#9B7EC8',
   '#6B4F8A','#B89AC8','#2D1A45','#D4C0E0',
   '#8A6AB0','#E0D0EE'
+];
+
+const FINANZAS_PALETTE = [
+  '#4A2D6F','#E07A5F','#3D9970','#4D96FF',
+  '#FFB627','#E63946','#2EC4B6','#9B5DE5',
+  '#F4A261','#577590'
 ];
 
 Chart.defaults.color = '#9B8AAA';
@@ -1746,7 +1763,7 @@ function renderMediosDonut() {
       labels,
       datasets: [{
         data: labels.map(l => grouped[l]),
-        backgroundColor: PURPLE_PALETTE.slice(0, labels.length),
+        backgroundColor: FINANZAS_PALETTE.slice(0, labels.length),
         borderWidth: 2,
         borderColor: '#fff',
       }]
@@ -1777,7 +1794,7 @@ function renderMediosEvolucion() {
       filteredRentabilidad.filter(r => r.mes === mes && r.medio === medio)
         .reduce((s, r) => s + r.monto, 0)
     ),
-    backgroundColor: PURPLE_PALETTE[i % PURPLE_PALETTE.length],
+    backgroundColor: FINANZAS_PALETTE[i % FINANZAS_PALETTE.length],
     borderRadius: 4,
     borderSkipped: false,
   }));
@@ -1806,7 +1823,7 @@ function renderMediosSucursal() {
       filteredRentabilidad.filter(r => r.sucursal === suc && r.medio === medio)
         .reduce((s, r) => s + r.monto, 0)
     ),
-    backgroundColor: PURPLE_PALETTE[i % PURPLE_PALETTE.length],
+    backgroundColor: FINANZAS_PALETTE[i % FINANZAS_PALETTE.length],
     borderRadius: 4,
     borderSkipped: false,
   }));
@@ -1826,6 +1843,52 @@ function renderMediosSucursal() {
   });
 }
 
+function populateMedioDetalleSelect() {
+  const sel = $('sel-medio-detalle');
+  const medios = [...new Set(rawRentabilidad.map(r => r.medio))].filter(Boolean).sort();
+  sel.innerHTML = medios.map(m => `<option value="${m}">${m}</option>`).join('');
+}
+
+function renderMedioDetalle() {
+  const medio = $('sel-medio-detalle').value;
+  if (!medio) return;
+  const filas = rawRentabilidad.filter(r => r.medio === medio);
+  const meses = [...new Set(filas.map(r => r.mes))].filter(Boolean)
+    .sort((a, b) => parseMesOrder(a) - parseMesOrder(b));
+  const data = meses.map(mes =>
+    filas.filter(r => r.mes === mes).reduce((s, r) => s + r.monto, 0)
+  );
+  makeChart('chart-medio-detalle', {
+    type: 'line',
+    data: {
+      labels: meses,
+      datasets: [{
+        label: medio,
+        data,
+        borderColor: '#7B5EA7',
+        backgroundColor: 'rgba(123,94,167,0.12)',
+        fill: true,
+        tension: 0.35,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#4A2D6F',
+        borderWidth: 2.5,
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' $' + fmt(Math.round(ctx.parsed.y)) } }
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: { grid: { color: '#E8E0D4' }, beginAtZero: true,
+             ticks: { callback: v => '$' + fmt(v) } }
+      }
+    }
+  });
+}
+
 // ── Finanzas — fetch ──────────────────────────────────────────────────────────
 async function loadFinanzasData() {
   finanzasLoaded = true;
@@ -1837,8 +1900,10 @@ async function loadFinanzasData() {
     rawRentabilidad = normalizeRentabilidad(json.rentabilidad);
     console.log('[finanzas] filas cargadas:', rawRentabilidad.length);
     populateFinanzasFilters();
+    populateMedioDetalleSelect();
     filteredRentabilidad = [...rawRentabilidad];
     renderFinanzas();
+    renderMedioDetalle();
   } catch (err) {
     console.error('[finanzas] error:', err);
     $('main-finanzas').insertAdjacentHTML('afterbegin',
