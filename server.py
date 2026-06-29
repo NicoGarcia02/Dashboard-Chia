@@ -168,8 +168,12 @@ def get_finanzas_data():
     if _finanzas_cache["body"] and now < _finanzas_cache["expires"]:
         return _finanzas_cache["body"]
 
-    result = fetch_range("Rentabilidad!J10:N15000", SPREADSHEET_ID_FINANZAS)
-    body = json.dumps({"rentabilidad": result.get("values", [])}).encode()
+    # Fetch en dos bloques para evitar cortes arbitrarios del API
+    r1 = fetch_range("Rentabilidad!J10:N5000",  SPREADSHEET_ID_FINANZAS)
+    r2 = fetch_range("Rentabilidad!J5001:N15000", SPREADSHEET_ID_FINANZAS)
+    rows = r1.get("values", []) + r2.get("values", [])
+
+    body = json.dumps({"rentabilidad": rows}).encode()
     _finanzas_cache["body"] = body
     _finanzas_cache["expires"] = now + CACHE_TTL
     return body
