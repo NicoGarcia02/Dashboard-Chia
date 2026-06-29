@@ -15,11 +15,13 @@ import urllib.parse
 
 # ── Configuración ──────────────────────────────────────────────────────────────
 SPREADSHEET_ID = "1rCLlFwT6MmzCqs2MUckNvgZeTQAwiwy5q8vbdLtSoS8"
+SPREADSHEET_ID_FINANZAS = "1r-tcG3jnqV9zCW8J86iuL4vuN6k3hvM_VBiuRg6Wj-s"
 PORT = int(os.environ.get("PORT", 8765))
 CACHE_TTL = 300  # segundos (5 minutos)
 # ───────────────────────────────────────────────────────────────────────────────
 
 _data_cache = {"body": None, "expires": 0}
+_finanzas_cache = {"body": None, "expires": 0}
 
 
 def load_credentials():
@@ -109,6 +111,22 @@ def fetch_sheet(sheet_name):
         raise RuntimeError(f"HTTP {e.code} al leer '{sheet_name}': {body}")
 
 
+def fetch_range(range_str, spreadsheet_id):
+    token = get_access_token()
+    url = (
+        f"https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet_id}"
+        f"/values/{urllib.parse.quote(range_str, safe='!:')}"
+        f"?valueRenderOption=UNFORMATTED_VALUE"
+    )
+    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+    try:
+        with urllib.request.urlopen(req) as resp:
+            return json.loads(resp.read())
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()
+        raise RuntimeError(f"HTTP {e.code} al leer '{range_str}': {body}")
+
+
 def get_data():
     now = time.time()
     if _data_cache["body"] and now < _data_cache["expires"]:
@@ -146,6 +164,18 @@ def get_data():
     return body
 
 
+def get_finanzas_data():
+    now = time.time()
+    if _finanzas_cache["body"] and now < _finanzas_cache["expires"]:
+        return _finanzas_cache["body"]
+
+    result = fetch_range("Rentabilidad!J10:N", SPREADSHEET_ID_FINANZAS)
+    body = json.dumps({"rentabilidad": result.get("values", [])}).encode()
+    _finanzas_cache["body"] = body
+    _finanzas_cache["expires"] = now + CACHE_TTL
+    return body
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         print(format % args)
@@ -166,6 +196,23 @@ class Handler(BaseHTTPRequestHandler):
         if parsed.path == "/data":
             try:
                 body = get_data()
+                self.send_response(200)
+                self._cors()
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(body)
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                self.send_response(500)
+                self._cors()
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode())
+
+        elif parsed.path == "/finanzas-data":
+            try:
+                body = get_finanzas_data()
                 self.send_response(200)
                 self._cors()
                 self.send_header("Content-Type", "application/json")

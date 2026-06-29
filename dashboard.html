@@ -634,9 +634,132 @@
     /* Error */
     #error-msg { margin: 0 16px; }
   }
+
+  /* ── Menu button ── */
+  .menu-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.75);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-right: 2px;
+  }
+  .menu-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+  /* ── Sidebar overlay ── */
+  #sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  #sidebar-overlay.open { opacity: 1; pointer-events: auto; }
+
+  /* ── Sidebar ── */
+  #sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 240px;
+    background: var(--purple);
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.3);
+  }
+  #sidebar.open { transform: translateX(0); }
+
+  .sidebar-head {
+    padding: 20px 20px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  .sidebar-brand {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.3rem;
+    color: #fff;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .sidebar-brand em {
+    display: block;
+    font-style: normal;
+    font-size: 0.6rem;
+    opacity: 0.5;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: lowercase;
+    margin-top: 3px;
+  }
+  .sidebar-close {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 5px 7px;
+    border-radius: 5px;
+    transition: background 0.15s, color 0.15s;
+    line-height: 1;
+  }
+  .sidebar-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+  .sidebar-nav {
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.6);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    transition: background 0.15s, color 0.15s;
+    user-select: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .nav-item.active { background: rgba(255,255,255,0.16); color: #fff; }
+  .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
 </style>
 </head>
 <body>
+
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="sidebar">
+  <div class="sidebar-head">
+    <div class="sidebar-brand">CHiA <em>good food</em></div>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item active" data-section="ventas" onclick="switchSection('ventas')">
+      <span class="nav-icon">📊</span> Ventas
+    </div>
+    <div class="nav-item" data-section="finanzas" onclick="switchSection('finanzas')">
+      <span class="nav-icon">💰</span> Finanzas
+    </div>
+  </nav>
+</div>
 
 <div id="loading">
   <div class="load-brand">
@@ -651,13 +774,14 @@
 
 <div class="sticky-top">
 <header>
+  <button class="menu-btn" onclick="openSidebar()">☰</button>
   <div class="logo">CHiA <em>good food</em></div>
   <div class="header-sep"></div>
-  <div class="header-title">Dashboard Ventas</div>
+  <div id="header-title" class="header-title">Dashboard Ventas</div>
   <div id="status">Conectando</div>
 </header>
 
-<div class="filters">
+<div id="ventas-filters" class="filters">
   <div class="filter-group">
     <label>Período</label>
     <div class="mode-toggle">
@@ -693,9 +817,22 @@
   <button class="btn btn-primary"   onclick="applyFilters()">Aplicar</button>
   <button class="btn btn-secondary" onclick="resetFilters()">Limpiar</button>
 </div>
+
+<div id="finanzas-filters" class="filters" style="display:none">
+  <div class="filter-group">
+    <label>Mes/Año</label>
+    <select id="ff-mes"><option value="">Todos</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Sucursal</label>
+    <select id="ff-sucursal"><option value="">Todas</option></select>
+  </div>
+  <button class="btn btn-primary" onclick="applyFinanzasFilters()">Aplicar</button>
+  <button class="btn btn-secondary" onclick="resetFinanzasFilters()">Limpiar</button>
+</div>
 </div>
 
-<main>
+<main id="main-ventas">
 
   <!-- KPIs -->
   <div class="kpi-row">
@@ -790,6 +927,45 @@
   <div class="card">
     <div class="card-title">Ranking de Productos</div>
     <div id="ranking-table"><div class="no-data">Cargando...</div></div>
+  </div>
+
+</main>
+
+<main id="main-finanzas" style="display:none">
+
+  <!-- KPIs Finanzas -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">Total Facturado</div>
+      <div class="kpi-value" id="f-kpi-monto">—</div>
+    </div>
+    <div class="kpi light">
+      <div class="kpi-label">Transacciones</div>
+      <div class="kpi-value" id="f-kpi-transacciones">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Medio Principal</div>
+      <div class="kpi-value" id="f-kpi-medio" style="font-size:1.5rem;line-height:1.2">—</div>
+    </div>
+  </div>
+
+  <!-- Distribución + Evolución -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Distribución por Medio de Pago</div>
+      <canvas id="chart-medios-dona" style="max-height:280px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Evolución Mensual por Medio de Pago</div>
+      <div class="chart-hint">Montos apilados por mes</div>
+      <canvas id="chart-medios-evol"></canvas>
+    </div>
+  </div>
+
+  <!-- Por sucursal -->
+  <div class="card">
+    <div class="card-title">Medios de Pago por Sucursal</div>
+    <canvas id="chart-medios-suc" style="max-height:320px"></canvas>
   </div>
 
 </main>
@@ -1442,6 +1618,224 @@ async function loadData() {
 }
 
 loadData();
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+function openSidebar() {
+  $('sidebar').classList.add('open');
+  $('sidebar-overlay').classList.add('open');
+}
+
+function closeSidebar() {
+  $('sidebar').classList.remove('open');
+  $('sidebar-overlay').classList.remove('open');
+}
+
+let currentSection = 'ventas';
+let finanzasLoaded = false;
+
+function switchSection(section) {
+  closeSidebar();
+  if (currentSection === section) return;
+  currentSection = section;
+
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.section === section);
+  });
+
+  const titles = { ventas: 'Dashboard Ventas', finanzas: 'Finanzas' };
+  $('header-title').textContent = titles[section];
+
+  $('ventas-filters').style.display  = section === 'ventas'   ? '' : 'none';
+  $('finanzas-filters').style.display = section === 'finanzas' ? '' : 'none';
+  $('main-ventas').style.display     = section === 'ventas'   ? '' : 'none';
+  $('main-finanzas').style.display   = section === 'finanzas' ? '' : 'none';
+
+  if (section === 'finanzas' && !finanzasLoaded) {
+    loadFinanzasData();
+  }
+}
+
+// ── Finanzas — estado ─────────────────────────────────────────────────────────
+let rawRentabilidad = [], filteredRentabilidad = [];
+
+function parseMonto(val) {
+  if (typeof val === 'number') return val;
+  if (!val) return 0;
+  const s = String(val).replace(/[$\s]/g, '');
+  if (s.includes('.') && s.includes(',')) return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
+  if (s.includes(',')) return parseFloat(s.replace(',', '.')) || 0;
+  return parseFloat(s) || 0;
+}
+
+function normalizeRentabilidad(rows) {
+  if (!rows || rows.length < 2) return [];
+  const headers = rows[0].map(h => String(h).trim().toLowerCase().replace(/^﻿/, ''));
+  return rows.slice(1).map(row => {
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = row[i] !== undefined ? String(row[i]).trim() : '');
+    return {
+      mes:      obj['mes'] || obj['mes/año'] || '',
+      fecha:    obj['fecha'] || '',
+      sucursal: obj['sucursal'] || '',
+      monto:    parseMonto(obj['monto'] || 0),
+      medio:    obj['medio de pago'] || obj['medio'] || '',
+    };
+  }).filter(r => r.fecha && r.monto > 0);
+}
+
+// ── Finanzas — filtros ────────────────────────────────────────────────────────
+function populateFinanzasFilters() {
+  const meses = [...new Set(rawRentabilidad.map(r => r.mes))].filter(Boolean)
+    .sort((a, b) => parseMesOrder(b) - parseMesOrder(a));
+  const sucursales = [...new Set(rawRentabilidad.map(r => r.sucursal))].filter(Boolean).sort();
+  populate('ff-mes', meses);
+  populate('ff-sucursal', sucursales);
+}
+
+function applyFinanzasFilters() {
+  const mes = $('ff-mes').value;
+  const suc = $('ff-sucursal').value;
+  filteredRentabilidad = rawRentabilidad.filter(r =>
+    (!mes || r.mes === mes) && (!suc || r.sucursal === suc)
+  );
+  renderFinanzas();
+}
+
+function resetFinanzasFilters() {
+  ['ff-mes', 'ff-sucursal'].forEach(id => $(id).value = '');
+  filteredRentabilidad = [...rawRentabilidad];
+  renderFinanzas();
+}
+
+// ── Finanzas — render ─────────────────────────────────────────────────────────
+function renderFinanzas() {
+  renderFinanzasKPIs();
+  renderMediosDonut();
+  renderMediosEvolucion();
+  renderMediosSucursal();
+}
+
+function renderFinanzasKPIs() {
+  const total = filteredRentabilidad.reduce((s, r) => s + r.monto, 0);
+  $('f-kpi-monto').textContent = '$' + fmt(Math.round(total));
+  $('f-kpi-transacciones').textContent = fmt(filteredRentabilidad.length);
+  const byMedio = groupBy(filteredRentabilidad, 'medio', 'monto');
+  const top = Object.entries(byMedio).sort((a, b) => b[1] - a[1])[0];
+  $('f-kpi-medio').textContent = top ? top[0] : '—';
+}
+
+function renderMediosDonut() {
+  const grouped = groupBy(filteredRentabilidad, 'medio', 'monto');
+  const labels = Object.keys(grouped).sort((a, b) => grouped[b] - grouped[a]);
+  const total = Object.values(grouped).reduce((s, v) => s + v, 0);
+  makeChart('chart-medios-dona', {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data: labels.map(l => grouped[l]),
+        backgroundColor: PURPLE_PALETTE.slice(0, labels.length),
+        borderWidth: 2,
+        borderColor: '#fff',
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'right', labels: { padding: 14, boxWidth: 12, usePointStyle: true, font: { family: 'Nunito', weight: '700' } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0;
+              return ` ${ctx.label}: $${fmt(Math.round(ctx.parsed))} (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderMediosEvolucion() {
+  const medios = [...new Set(filteredRentabilidad.map(r => r.medio))].filter(Boolean);
+  const meses  = [...new Set(filteredRentabilidad.map(r => r.mes))].filter(Boolean)
+    .sort((a, b) => parseMesOrder(a) - parseMesOrder(b));
+  const datasets = medios.map((medio, i) => ({
+    label: medio,
+    data: meses.map(mes =>
+      filteredRentabilidad.filter(r => r.mes === mes && r.medio === medio)
+        .reduce((s, r) => s + r.monto, 0)
+    ),
+    backgroundColor: PURPLE_PALETTE[i % PURPLE_PALETTE.length],
+    borderRadius: 4,
+    borderSkipped: false,
+  }));
+  makeChart('chart-medios-evol', {
+    type: 'bar',
+    data: { labels: meses, datasets },
+    options: {
+      plugins: {
+        legend: { labels: { padding: 14, boxWidth: 12, usePointStyle: true, font: { family: 'Nunito', weight: '700' } } }
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false } },
+        y: { stacked: true, grid: { color: '#E8E0D4' }, beginAtZero: true,
+             ticks: { callback: v => '$' + fmt(v) } }
+      }
+    }
+  });
+}
+
+function renderMediosSucursal() {
+  const medios    = [...new Set(filteredRentabilidad.map(r => r.medio))].filter(Boolean);
+  const sucursales = [...new Set(filteredRentabilidad.map(r => r.sucursal))].filter(Boolean).sort();
+  const datasets = medios.map((medio, i) => ({
+    label: medio,
+    data: sucursales.map(suc =>
+      filteredRentabilidad.filter(r => r.sucursal === suc && r.medio === medio)
+        .reduce((s, r) => s + r.monto, 0)
+    ),
+    backgroundColor: PURPLE_PALETTE[i % PURPLE_PALETTE.length],
+    borderRadius: 4,
+    borderSkipped: false,
+  }));
+  makeChart('chart-medios-suc', {
+    type: 'bar',
+    data: { labels: sucursales, datasets },
+    options: {
+      plugins: {
+        legend: { labels: { padding: 14, boxWidth: 12, usePointStyle: true, font: { family: 'Nunito', weight: '700' } } }
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false } },
+        y: { stacked: true, grid: { color: '#E8E0D4' }, beginAtZero: true,
+             ticks: { callback: v => '$' + fmt(v) } }
+      }
+    }
+  });
+}
+
+// ── Finanzas — fetch ──────────────────────────────────────────────────────────
+async function loadFinanzasData() {
+  finanzasLoaded = true;
+  try {
+    const res = await fetch('/finanzas-data');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    if (json.error) throw new Error(json.error);
+    rawRentabilidad = normalizeRentabilidad(json.rentabilidad);
+    console.log('[finanzas] filas cargadas:', rawRentabilidad.length);
+    populateFinanzasFilters();
+    filteredRentabilidad = [...rawRentabilidad];
+    renderFinanzas();
+  } catch (err) {
+    console.error('[finanzas] error:', err);
+    $('main-finanzas').insertAdjacentHTML('afterbegin',
+      `<div style="background:#fff5f5;border:1px solid #f5c0c0;border-radius:10px;padding:20px 28px;color:#C0392B;font-family:Nunito,sans-serif;font-size:.8rem;margin-bottom:24px">
+        <strong>No se pudo cargar Finanzas.</strong><br>Error: ${err.message}
+      </div>`
+    );
+  }
+}
 </script>
 </body>
 </html>
