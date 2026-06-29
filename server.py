@@ -168,7 +168,7 @@ def get_finanzas_data():
     if _finanzas_cache["body"] and now < _finanzas_cache["expires"]:
         return _finanzas_cache["body"]
 
-    result = fetch_range("Rentabilidad!J10:N", SPREADSHEET_ID_FINANZAS)
+    result = fetch_range("'Medios de pago'!A1:E", SPREADSHEET_ID_FINANZAS)
     rows = result.get("values", [])
 
     body = json.dumps({"rentabilidad": rows}).encode()
